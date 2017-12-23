@@ -10,10 +10,15 @@ find_package(Threads REQUIRED)
 
 find_package(Proxygen REQUIRED)
 
+set(MAIN_FILE "src/main.cpp")
+
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/${MAIN_FILE}")
+
 file(GLOB_RECURSE HEADERS "src/*.h")
 
-add_executable(cpp-board-engine ${SOURCES} ${HEADERS})
+add_library(cpp-board-engine-objects OBJECT ${SOURCES} ${HEADERS})
+add_executable(cpp-board-engine ${MAIN_FILE} $<TARGET_OBJECTS:cpp-board-engine-objects>)
 
 target_link_libraries(cpp-board-engine ${PROXYGEN_LIBRARIES})
 # For some reasons pthread library should be explicitly linked last

@@ -28,4 +28,3 @@ find_package_handle_standard_args(FOLLY FOLLY_INCLUDE_DIR FOLLY_LIBRARY)
 if(FOLLY_FOUND AND NOT FOLLY_FIND_QUIETLY)
     message(STATUS "FOLLY: ${FOLLY_INCLUDE_DIR}")
 endif()
-
