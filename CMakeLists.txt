@@ -10,6 +10,8 @@ find_package(Threads REQUIRED)
 
 find_package(Proxygen REQUIRED)
 
+include(GoogleTest)
+
 set(MAIN_FILE "src/main.cpp")
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -23,3 +25,21 @@ add_executable(cpp-board-engine ${MAIN_FILE} $<TARGET_OBJECTS:cpp-board-engine-o
 target_link_libraries(cpp-board-engine ${PROXYGEN_LIBRARIES})
 # For some reasons pthread library should be explicitly linked last
 target_link_libraries(cpp-board-engine Threads::Threads)
+
+
+file(GLOB_RECURSE TESTS "test/*.cpp")
+add_executable(cpp-board-engine-tests ${TESTS} $<TARGET_OBJECTS:cpp-board-engine-objects>)
+
+target_include_directories(cpp-board-engine-tests PRIVATE "src/")
+target_include_directories(
+    cpp-board-engine-tests PRIVATE
+    "${gtest_SOURCE_DIR}/include"
+    "${gmock_SOURCE_DIR}/include")
+
+target_link_libraries(cpp-board-engine-tests ${PROXYGEN_LIBRARIES})
+# For some reasons pthread library should be explicitly linked last
+target_link_libraries(cpp-board-engine-tests Threads::Threads)
+
+target_link_libraries(cpp-board-engine-tests gtest)
+target_link_libraries(cpp-board-engine-tests gmock)
+target_link_libraries(cpp-board-engine-tests gmock_main)
