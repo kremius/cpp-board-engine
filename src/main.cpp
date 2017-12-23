@@ -1,15 +1,19 @@
 #include <proxygen/httpserver/HTTPServer.h>
 
+#include <glog/logging.h>
+
 #include "DummyHandler.h"
 
 using namespace proxygen;
 
-int main(int /*argc*/, char* /*argv*/[]) {
+int main(int /*argc*/, char* argv[]) {
+    google::InitGoogleLogging(argv[0]);
+
     using proxygen::HTTPServerOptions;
     using proxygen::HTTPServer;
 
     HTTPServerOptions options;
-    options.threads = 4;
+    options.threads = 1;
     options.idleTimeout = std::chrono::milliseconds(60000);
     options.shutdownOn = {SIGINT, SIGTERM};
     options.enableContentCompression = false;
@@ -21,6 +25,7 @@ int main(int /*argc*/, char* /*argv*/[]) {
     HTTPServer server(std::move(options));
     server.bind({{folly::SocketAddress("127.0.0.1", 3333, true), HTTPServer::Protocol::HTTP}});
 
+    LOG(INFO) << "Server will be started";
     server.start();
 
     return 0;

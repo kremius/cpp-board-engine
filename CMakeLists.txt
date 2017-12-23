@@ -9,8 +9,15 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 find_package(Proxygen REQUIRED)
+# TODO: proper boost_context library search
 
 include(GoogleTest)
+
+set(LINK_LIBRARIES_LIST
+    ${PROXYGEN_LIBRARIES}
+    boost_context
+    # For some reasons pthread library should be explicitly linked last
+    Threads::Threads)
 
 set(MAIN_FILE "src/main.cpp")
 
@@ -22,10 +29,7 @@ file(GLOB_RECURSE HEADERS "src/*.h")
 add_library(cpp-board-engine-objects OBJECT ${SOURCES} ${HEADERS})
 add_executable(cpp-board-engine ${MAIN_FILE} $<TARGET_OBJECTS:cpp-board-engine-objects>)
 
-target_link_libraries(cpp-board-engine ${PROXYGEN_LIBRARIES})
-# For some reasons pthread library should be explicitly linked last
-target_link_libraries(cpp-board-engine Threads::Threads)
-
+target_link_libraries(cpp-board-engine ${LINK_LIBRARIES_LIST})
 
 file(GLOB_RECURSE TESTS "test/*.cpp")
 add_executable(cpp-board-engine-tests ${TESTS} $<TARGET_OBJECTS:cpp-board-engine-objects>)
@@ -36,10 +40,11 @@ target_include_directories(
     "${gtest_SOURCE_DIR}/include"
     "${gmock_SOURCE_DIR}/include")
 
-target_link_libraries(cpp-board-engine-tests ${PROXYGEN_LIBRARIES})
-# For some reasons pthread library should be explicitly linked last
-target_link_libraries(cpp-board-engine-tests Threads::Threads)
+target_link_libraries(cpp-board-engine-tests ${LINK_LIBRARIES_LIST})
 
-target_link_libraries(cpp-board-engine-tests gtest)
-target_link_libraries(cpp-board-engine-tests gmock)
-target_link_libraries(cpp-board-engine-tests gmock_main)
+set(GTEST_LIBRARIES_LIST
+    gtest
+    gmock
+    gmock_main)
+
+target_link_libraries(cpp-board-engine-tests ${GTEST_LIBRARIES_LIST})
