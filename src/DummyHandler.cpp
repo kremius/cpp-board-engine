@@ -5,17 +5,12 @@
 using namespace proxygen;
 
 void DummyHandler::onRequest(std::unique_ptr<HTTPMessage>) noexcept {
-    ResponseBuilder(downstream_)
-        .status(200, "OK")
-        .body("<h1>Hello, world!</h1>")
-        .sendWithEOM();
-
     folly::EventBase* base = folly::EventBaseManager::get()->getEventBase();
-    const auto empty_options = folly::fibers::FiberManager::Options();
-    folly::fibers::getFiberManager(*base, empty_options).add([]() {
-        while (true) {
-            // Do nothing
-        };
+    folly::fibers::getFiberManager(*base).add([this]() {
+        ResponseBuilder(downstream_)
+            .status(200, "OK")
+            .body("<h1>Hello, world!</h1>")
+            .sendWithEOM();
     });
 }
 

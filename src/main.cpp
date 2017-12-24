@@ -13,7 +13,7 @@ int main(int /*argc*/, char* argv[]) {
     using proxygen::HTTPServer;
 
     HTTPServerOptions options;
-    options.threads = 1;
+    options.threads = 8;
     options.idleTimeout = std::chrono::milliseconds(60000);
     options.shutdownOn = {SIGINT, SIGTERM};
     options.enableContentCompression = false;
