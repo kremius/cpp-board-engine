@@ -33,6 +33,10 @@ public:
     void onError(proxygen::ProxygenError /*err*/) noexcept override {
         delete this;
     }
+private:
+    void handleRequest() noexcept;
+
+    std::unique_ptr<proxygen::HTTPMessage> headers_;
 };
 
 
