@@ -9,5 +9,7 @@ cd build
 cmake ..
 cmake --build .
 
-# TODO: tests
+# Tests
+./cpp-board-engine-tests
+
 # TODO: coverage
