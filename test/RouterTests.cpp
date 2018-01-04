@@ -83,19 +83,27 @@ TEST(RouterFactory, Route)
 
     auto factory1 = std::make_unique<MockRequestHandlerFactory>();
     auto factory2 = std::make_unique<MockRequestHandlerFactory>();
+    auto factory3 = std::make_unique<MockRequestHandlerFactory>();
 
     MockRequestHandler handler1;
     MockRequestHandler handler2;
+    MockRequestHandler handler3;
 
     EXPECT_CALL(*factory1, onRequest(_, _))
         .WillRepeatedly(Return(&handler1));
     EXPECT_CALL(*factory2, onRequest(_, _))
         .WillRepeatedly(Return(&handler2));
+    EXPECT_CALL(*factory3, onRequest(_, _))
+        .WillRepeatedly(Return(&handler3));
 
     RouterFactory router;
     router.addRoutes(RoutesChain()
         .addThen("/api/v3/books", std::move(factory1))
         .addThen("/static/images/", std::move(factory2))
+        .build());
+
+    router.addRoutes(RoutesChain()
+        .addThen("/test/test/test/test", std::move(factory3))
         .build());
 
     {
@@ -112,5 +120,13 @@ TEST(RouterFactory, Route)
 
         auto handler = router.onRequest(nullptr, &message);
         EXPECT_EQ(handler, &handler2);
+    }
+
+    {
+        HTTPMessage message;
+        message.setURL("/test/test/test/test/ffffffffffffff");
+
+        auto handler = router.onRequest(nullptr, &message);
+        EXPECT_EQ(handler, &handler3);
     }
 }

@@ -1,6 +1,6 @@
 #include "Router.h"
 
-#include <boost/range/algorithm/find_if.hpp>
+#include <boost/range/algorithm.hpp>
 #include <boost/algorithm/string.hpp>
 
 void RouterFactory::onServerStart(folly::EventBase* /*evb*/) noexcept {
@@ -27,5 +27,10 @@ proxygen::RequestHandler* RouterFactory::onRequest(
 }
 
 void RouterFactory::addRoutes(std::vector<RouterFactory::Route> routes) noexcept {
-    routes_ = std::move(routes);
+    if (routes_.empty()) {
+        routes_ = std::move(routes);
+    } else {
+        // TODO: range move?
+        std::move(routes.begin(), routes.end(), std::back_inserter(routes_));
+    }
 }
