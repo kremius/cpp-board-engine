@@ -3,12 +3,16 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/algorithm/string.hpp>
 
-void RouterFactory::onServerStart(folly::EventBase* /*evb*/) noexcept {
-    // TODO: start all factories
+void RouterFactory::onServerStart(folly::EventBase* evb) noexcept {
+    for (auto& route : routes_) {
+        route.second->onServerStart(evb);
+    }
 }
 
 void RouterFactory::onServerStop() noexcept {
-    // TODO: stop all factories
+    for (auto& route : routes_) {
+        route.second->onServerStop();
+    }
 }
 
 proxygen::RequestHandler* RouterFactory::onRequest(

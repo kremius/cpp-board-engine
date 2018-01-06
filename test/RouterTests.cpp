@@ -77,6 +77,42 @@ TEST(RoutesChain, BasicUsage)
 using ::testing::_;
 using ::testing::Return;
 
+TEST(RouterFactory, StopAndStart)
+{
+    using namespace proxygen;
+
+    auto factory1 = std::make_unique<MockRequestHandlerFactory>();
+    auto factory2 = std::make_unique<MockRequestHandlerFactory>();
+
+    folly::EventBase base;
+
+    using ::testing::Sequence;
+    Sequence sequence1;
+    Sequence sequence2;
+
+    EXPECT_CALL(*factory1, onServerStart(&base))
+        .Times(1)
+        .InSequence(sequence1);
+    EXPECT_CALL(*factory1, onServerStop())
+        .Times(1)
+        .InSequence(sequence1);
+    EXPECT_CALL(*factory2, onServerStart(&base))
+        .Times(1)
+        .InSequence(sequence2);
+    EXPECT_CALL(*factory2, onServerStop())
+        .Times(1)
+        .InSequence(sequence2);
+
+    RouterFactory router;
+    router.addRoutes(RoutesChain()
+        .addThen("1", std::move(factory1))
+        .addThen("2", std::move(factory2))
+        .build());
+
+    router.onServerStart(&base);
+    router.onServerStop();
+}
+
 TEST(RouterFactory, Route)
 {
     using namespace proxygen;
