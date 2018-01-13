@@ -1,6 +1,6 @@
 #include "Router.h"
 
-//#include <gmock/gmock.h>
+#include "DefaultPageNotFoundHandler.h"
 
 #include <proxygen/httpserver/Mocks.h>
 
@@ -164,5 +164,15 @@ TEST(RouterFactory, Route)
 
         auto handler = router.onRequest(nullptr, &message);
         EXPECT_EQ(handler, &handler3);
+    }
+
+    {
+        HTTPMessage message;
+        message.setURL("/thispagedoesnotexistandneverexisted");
+
+        auto handler = router.onRequest(nullptr, &message);
+        EXPECT_TRUE(dynamic_cast<DefaultPageNotFoundHandler*>(handler) != 0);
+        // Free memory
+        handler->onEOM();
     }
 }

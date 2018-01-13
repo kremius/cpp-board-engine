@@ -1,5 +1,7 @@
 #include "Router.h"
 
+#include "DefaultPageNotFoundHandler.h"
+
 #include <boost/range/algorithm.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -23,8 +25,8 @@ proxygen::RequestHandler* RouterFactory::onRequest(
     });
 
     if (it == routes_.end()) {
-        // TODO: 404 handler
-        return nullptr;
+        // TODO: customizable 404 handler
+        return new DefaultPageNotFoundHandler;
     }
 
     return it->second->onRequest(handler, message);

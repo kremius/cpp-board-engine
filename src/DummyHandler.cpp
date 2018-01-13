@@ -1,5 +1,7 @@
 #include "DummyHandler.h"
 
+#include "DefaultPageNotFoundHandler.h"
+
 #include <folly/fibers/FiberManagerMap.h>
 
 using namespace proxygen;
@@ -22,5 +24,5 @@ void DummyHandler::handleRequest() noexcept {
 
 RequestHandler* DummyHandlerFactory::onRequest(
     RequestHandler*, HTTPMessage*) noexcept {
-    return new DummyHandler;
+    return new DefaultPageNotFoundHandler;
 }
