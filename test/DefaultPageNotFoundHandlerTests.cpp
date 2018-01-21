@@ -4,7 +4,6 @@
 
 TEST(DefaultPageNotFoundHandler, Basics)
 {
-    // TODO: is it right?
     DefaultPageNotFoundHandler handler;
     proxygen::MockResponseHandler response_mock(&handler);
     handler.setResponseHandler(&response_mock);
@@ -13,11 +12,15 @@ TEST(DefaultPageNotFoundHandler, Basics)
     Sequence sequence;
 
     using ::testing::_;
-    // TODO: check actual value passed
-    EXPECT_CALL(response_mock, sendHeaders(_))
+    using ::testing::Property;
+    using proxygen::HTTPMessage;
+    EXPECT_CALL(response_mock,
+                sendHeaders(Property(&HTTPMessage::getStatusCode, 404)))
+        .Times(1)
+        .InSequence(sequence);
+    EXPECT_CALL(response_mock, sendEOM())
         .Times(1)
         .InSequence(sequence);
 
     handler.onRequest(std::make_unique<proxygen::HTTPMessage>());
 }
-
