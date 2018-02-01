@@ -13,6 +13,7 @@ cmake --build .
 ./cpp-board-engine-tests
 
 # Coverage
+cd /app
 lcov -c -d . -o coverage.info
 lcov --remove coverage.info '/usr/*' --output-file coverage.info
 lcov --remove coverage.info 'test/*' --output-file coverage.info

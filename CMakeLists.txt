@@ -54,6 +54,10 @@ target_link_libraries(cpp-board-engine-tests ${GTEST_LIBRARIES_LIST})
 if(BUILD_COVER)
     target_compile_options(cpp-board-engine-objects PRIVATE -g -O0) # debug, no optimisation
     target_compile_options(cpp-board-engine-objects PRIVATE --coverage)
+
     target_link_libraries(cpp-board-engine --coverage)
+
+    target_compile_options(cpp-board-engine-tests PRIVATE -g -O0) # debug, no optimisation
+    target_compile_options(cpp-board-engine-tests PRIVATE --coverage)
     target_link_libraries(cpp-board-engine-tests --coverage)
 endif()
