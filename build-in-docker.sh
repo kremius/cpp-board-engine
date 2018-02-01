@@ -6,14 +6,13 @@ set -euo pipefail
 cd /app
 mkdir build
 cd build
-cmake ..
+cmake .. -DBUILD_COVER=ON
 cmake --build .
 
 # Tests
 ./cpp-board-engine-tests
 
 # Coverage
-cd /app
 lcov -c -d . -o coverage.info
 lcov --remove coverage.info '/usr/*' --output-file coverage.info
 lcov --remove coverage.info 'test/*' --output-file coverage.info
