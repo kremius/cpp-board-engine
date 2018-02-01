@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(CppBoardEngine)
 
+option(BUILD_COVER "Generate test coverage" OFF)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 set(CMAKE_CXX_STANDARD 14)
@@ -48,3 +50,10 @@ set(GTEST_LIBRARIES_LIST
     gmock_main)
 
 target_link_libraries(cpp-board-engine-tests ${GTEST_LIBRARIES_LIST})
+
+if(BUILD_COVER)
+    target_compile_options(cpp-board-engine-objects PRIVATE -g -O0) # debug, no optimisation
+    target_compile_options(cpp-board-engine-objects PRIVATE --coverage)
+    target_link_libraries(cpp-board-engine --coverage)
+    target_link_libraries(cpp-board-engine-tests --coverage)
+endif()

@@ -36,7 +36,7 @@ public:
 
     proxygen::RequestHandler* onRequest(
         proxygen::RequestHandler* handler,
-        proxygen::HTTPMessage* message) noexcept;
+        proxygen::HTTPMessage* message) noexcept override;
 
     void addRoutes(std::vector<Route> routes) noexcept;
 private:
