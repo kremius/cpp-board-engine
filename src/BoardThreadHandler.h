@@ -34,7 +34,7 @@ public:
         delete this;
     }
 private:
-    void handleRequest() noexcept;
+    void handleRequest(std::unique_ptr<proxygen::HTTPMessage> headers) noexcept;
 };
 
 

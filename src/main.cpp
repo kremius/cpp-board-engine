@@ -3,6 +3,8 @@
 #include <glog/logging.h>
 
 #include "DummyHandler.h"
+#include "BoardThreadHandler.h"
+#include "Router.h"
 
 using namespace proxygen;
 
@@ -17,8 +19,14 @@ int main(int /*argc*/, char* argv[]) {
     options.idleTimeout = std::chrono::milliseconds(60000);
     options.shutdownOn = {SIGINT, SIGTERM};
     options.enableContentCompression = false;
+
+    auto router = std::make_unique<RouterFactory>();
+    router->addRoutes(RoutesChain()
+        .addThen<BoardThreadHandlerFactory>("/thread")
+        .build());
+
     options.handlerFactories = RequestHandlerChain()
-        .addThen<DummyHandlerFactory>()
+        .addThen(std::move(router))
         .build();
     options.h2cEnabled = true;
 
