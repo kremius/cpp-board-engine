@@ -2,7 +2,6 @@
 
 #include <glog/logging.h>
 
-#include "DummyHandler.h"
 #include "BoardThreadHandler.h"
 #include "Router.h"
 
