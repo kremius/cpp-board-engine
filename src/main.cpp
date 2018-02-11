@@ -21,7 +21,7 @@ int main(int /*argc*/, char* argv[]) {
 
     auto router = std::make_unique<RouterFactory>();
     router->addRoutes(RoutesChain()
-        .addThen<BoardThreadHandlerFactory>("/thread")
+        .addThen<BoardThreadHandlerFactory>("/thread", {HTTPMethod::GET})
         .build());
 
     options.handlerFactories = RequestHandlerChain()

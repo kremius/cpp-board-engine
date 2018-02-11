@@ -61,17 +61,22 @@ TEST(RoutesChain, BasicUsage)
     auto factory1_ptr = factory1.get();
     auto factory2_ptr = factory2.get();
 
+    const auto methods1 = std::vector<HTTPMethod>{HTTPMethod::GET};
+    const auto methods2 = std::vector<HTTPMethod>{HTTPMethod::GET, HTTPMethod::POST};
+
     std::vector<Route> routes = RoutesChain()
-        .addThen("/url1", std::move(factory1))
-        .addThen("/different_url", std::move(factory2))
+        .addThen("/url1", {HTTPMethod::GET}, std::move(factory1))
+        .addThen("/different_url", {HTTPMethod::GET, HTTPMethod::POST}, std::move(factory2))
         .build();
 
     ASSERT_EQ(routes.size(), 2);
 
-    EXPECT_EQ(routes[0].first, "/url1");
-    EXPECT_EQ(routes[0].second.get(), factory1_ptr);
-    EXPECT_EQ(routes[1].first, "/different_url");
-    EXPECT_EQ(routes[1].second.get(), factory2_ptr);
+    EXPECT_EQ(routes[0].path, "/url1");
+    EXPECT_EQ(routes[0].methods, methods1);
+    EXPECT_EQ(routes[0].factory.get(), factory1_ptr);
+    EXPECT_EQ(routes[1].path, "/different_url");
+    EXPECT_EQ(routes[1].methods, methods2);
+    EXPECT_EQ(routes[1].factory.get(), factory2_ptr);
 }
 
 using ::testing::_;
@@ -105,8 +110,8 @@ TEST(RouterFactory, StopAndStart)
 
     RouterFactory router;
     router.addRoutes(RoutesChain()
-        .addThen("1", std::move(factory1))
-        .addThen("2", std::move(factory2))
+        .addThen("1", {HTTPMethod::GET}, std::move(factory1))
+        .addThen("2", {HTTPMethod::POST}, std::move(factory2))
         .build());
 
     router.onServerStart(&base);
@@ -134,16 +139,17 @@ TEST(RouterFactory, Route)
 
     RouterFactory router;
     router.addRoutes(RoutesChain()
-        .addThen("/api/v3/books", std::move(factory1))
-        .addThen("/static/images/", std::move(factory2))
+        .addThen("/api/v3/books", {HTTPMethod::POST}, std::move(factory1))
+        .addThen("/static/images/", {HTTPMethod::GET}, std::move(factory2))
         .build());
 
     router.addRoutes(RoutesChain()
-        .addThen("/test/test/test/test", std::move(factory3))
+        .addThen("/test/test/test/test", {HTTPMethod::POST, HTTPMethod::GET}, std::move(factory3))
         .build());
 
     {
         HTTPMessage message;
+        message.setMethod(HTTPMethod::POST);
         message.setURL("/api/v3/books/something/else");
 
         auto handler = router.onRequest(nullptr, &message);
@@ -152,6 +158,7 @@ TEST(RouterFactory, Route)
 
     {
         HTTPMessage message;
+        message.setMethod(HTTPMethod::GET);
         message.setURL("/static/images/kitty.png");
 
         auto handler = router.onRequest(nullptr, &message);
@@ -160,6 +167,7 @@ TEST(RouterFactory, Route)
 
     {
         HTTPMessage message;
+        message.setMethod(HTTPMethod::POST);
         message.setURL("/test/test/test/test/ffffffffffffff");
 
         auto handler = router.onRequest(nullptr, &message);
@@ -168,11 +176,34 @@ TEST(RouterFactory, Route)
 
     {
         HTTPMessage message;
+        message.setMethod(HTTPMethod::GET);
+        message.setURL("/test/test/test/test/ffffffffffffff");
+
+        auto handler = router.onRequest(nullptr, &message);
+        EXPECT_EQ(handler, &handler3);
+    }
+
+    {
+        HTTPMessage message;
+        message.setMethod(HTTPMethod::GET);
         message.setURL("/thispagedoesnotexistandneverexisted");
 
         auto handler = router.onRequest(nullptr, &message);
-        EXPECT_TRUE(dynamic_cast<DefaultPageNotFoundHandler*>(handler) != 0);
+        EXPECT_TRUE(dynamic_cast<DefaultPageNotFoundHandler*>(handler) != nullptr);
         // Free memory
         handler->onEOM();
     }
+
+    {
+        HTTPMessage message;
+        message.setMethod(HTTPMethod::POST);
+        message.setURL("/static/images/kitty.png");
+
+        auto handler = router.onRequest(nullptr, &message);
+        EXPECT_TRUE(dynamic_cast<DefaultPageNotFoundHandler*>(handler) != nullptr);
+        // Free memory
+        handler->onEOM();
+    }
+
+    // TODO: custon method test
 }

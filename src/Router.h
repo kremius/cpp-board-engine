@@ -5,7 +5,12 @@
 #include <proxygen/httpserver/RequestHandler.h>
 #include <proxygen/httpserver/ResponseBuilder.h>
 
-using Route = std::pair<std::string, std::unique_ptr<proxygen::RequestHandlerFactory>>;
+struct Route
+{
+    std::string path;
+    std::vector<proxygen::HTTPMethod> methods;
+    std::unique_ptr<proxygen::RequestHandlerFactory> factory;
+};
 
 class RoutesChain {
 public:
@@ -14,15 +19,17 @@ public:
     }
 
     template <typename T, typename... Args>
-    RoutesChain& addThen(const std::string& path, Args&&... args) {
-        chain_.push_back({path, std::make_unique<T>(std::forward<Args>(args)...)});
+    RoutesChain& addThen(
+        const std::string& path, const std::vector<proxygen::HTTPMethod>& methods, Args&&... args) {
+        chain_.push_back({path, methods, std::make_unique<T>(std::forward<Args>(args)...)});
         return *this;
     }
 
     RoutesChain& addThen(
         const std::string& path,
+        const std::vector<proxygen::HTTPMethod>& methods,
         std::unique_ptr<proxygen::RequestHandlerFactory> factory) {
-        chain_.push_back({path, std::move(factory)});
+        chain_.push_back({path, methods, std::move(factory)});
         return *this;
     }
 private:
@@ -40,6 +47,5 @@ public:
 
     void addRoutes(std::vector<Route> routes) noexcept;
 private:
-    using Route = std::pair<std::string, std::unique_ptr<RequestHandlerFactory>>;
     std::vector<Route> routes_;
 };

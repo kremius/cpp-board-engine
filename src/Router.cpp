@@ -5,23 +5,34 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <array>
+
 void RouterFactory::onServerStart(folly::EventBase* evb) noexcept {
     for (auto& route : routes_) {
-        route.second->onServerStart(evb);
+        route.factory->onServerStart(evb);
     }
 }
 
 void RouterFactory::onServerStop() noexcept {
     for (auto& route : routes_) {
-        route.second->onServerStop();
+        route.factory->onServerStop();
     }
 }
 
 proxygen::RequestHandler* RouterFactory::onRequest(
     proxygen::RequestHandler* handler,
     proxygen::HTTPMessage* message) noexcept {
-    auto it = boost::find_if(routes_, [message](const Route& route) {
-        return boost::starts_with(message->getURL(), route.first);
+
+    const auto maybe_method = message->getMethod();
+    if (!maybe_method) {
+        // TODO: bad method handler
+        return nullptr;
+    }
+    const auto method = std::array<proxygen::HTTPMethod, 1>{{maybe_method.get()}};
+
+    auto it = boost::find_if(routes_, [message, method](const Route& route) {
+        return    boost::contains(route.methods, method)
+               && boost::starts_with(message->getURL(), route.path);
     });
 
     if (it == routes_.end()) {
@@ -29,10 +40,10 @@ proxygen::RequestHandler* RouterFactory::onRequest(
         return new DefaultPageNotFoundHandler;
     }
 
-    return it->second->onRequest(handler, message);
+    return it->factory->onRequest(handler, message);
 }
 
-void RouterFactory::addRoutes(std::vector<RouterFactory::Route> routes) noexcept {
+void RouterFactory::addRoutes(std::vector<Route> routes) noexcept {
     if (routes_.empty()) {
         routes_ = std::move(routes);
     } else {
