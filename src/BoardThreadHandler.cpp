@@ -1,10 +1,12 @@
 #include "BoardThreadHandler.h"
 
 #include <folly/fibers/FiberManagerMap.h>
+#include <folly/json.h>
 
 #include <proxygen/httpserver/ResponseBuilder.h>
 
 using proxygen::ResponseBuilder;
+using proxygen::HTTPHeaderCode;
 
 void BoardThreadHandler::onRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept
@@ -19,10 +21,13 @@ void BoardThreadHandler::onRequest(
 void BoardThreadHandler::handleRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept
 {
+    folly::dynamic value = folly::dynamic::object;
+    value["thread"] = headers->getURL();
+
     ResponseBuilder(downstream_)
         .status(200, "OK")
-        .body("<h1>Board thread handler</h1><br>")
-        .body(headers->getURL())
+        .header(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE, "application/json")
+        .body(folly::toJson(value))
         .sendWithEOM();
 }
 
