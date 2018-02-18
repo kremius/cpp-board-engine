@@ -1,6 +1,6 @@
 #include "BoardThreadHandler.h"
 
-#include <regex>
+#include <boost/algorithm/string.hpp>
 
 #include <folly/fibers/FiberManagerMap.h>
 #include <folly/json.h>
@@ -12,6 +12,8 @@
 using proxygen::ResponseBuilder;
 using proxygen::HTTPHeaderCode;
 
+const std::string BoardThreadHandler::URL_PREFIX = "/thread/";
+
 void BoardThreadHandler::onRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     folly::EventBase* base = folly::EventBaseManager::get()->getEventBase();
@@ -22,19 +24,31 @@ void BoardThreadHandler::onRequest(
     });
 }
 
+Optional<uint64_t> BoardThreadHandler::extractThreadNumber(const std::string& url) {
+    if (!boost::starts_with(url, URL_PREFIX)) {
+        return std::experimental::nullopt;
+    }
+    const size_t start = URL_PREFIX.size();
+    const size_t end = url.size();
+
+    if (end <= start) {
+        return std::experimental::nullopt;
+    }
+
+    folly::fbstring after_perfix(&url[start], end - start);
+    auto maybe_number = folly::tryTo<uint64_t>(after_perfix);
+    if (!maybe_number) {
+        return std::experimental::nullopt;
+    }
+    const uint64_t number = maybe_number.value();
+    return number;
+}
+
 void BoardThreadHandler::handleRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     const auto& url = headers->getURL();
-
-    // TODO: remove regexes, because they exhaust stack
-    static thread_local std::regex regex(R"(^/thread/([0-9]{1,20})/?$)");
-    std::smatch match;
-
-    auto result = folly::fibers::runInMainContext([&]() {
-        return std::regex_search(url.begin(), url.end(), match, regex);
-    });
-
-    if (!result) {
+    const auto maybe_thread_number = extractThreadNumber(url);
+    if (!maybe_thread_number) {
         const folly::dynamic value = folly::dynamic::object("thread", "Not Found");
         ResponseBuilder(downstream_)
             .status(404, "Not Found")
@@ -43,19 +57,9 @@ void BoardThreadHandler::handleRequest(
             .sendWithEOM();
         return;
     }
+    const uint64_t number = maybe_thread_number.value();
 
-    auto number = folly::tryTo<int64_t>(match.str(1));
-    if (!number) {
-        const folly::dynamic value = folly::dynamic::object("thread", "Not Found");
-        ResponseBuilder(downstream_)
-            .status(404, "Not Found")
-            .header(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE, "application/json")
-            .body(folly::toJson(value))
-            .sendWithEOM();
-        return;
-    }
-
-    const folly::dynamic value = folly::dynamic::object("thread", number.value());
+    const folly::dynamic value = folly::dynamic::object("thread", number);
     ResponseBuilder(downstream_)
         .status(200, "OK")
         .header(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE, "application/json")

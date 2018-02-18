@@ -5,8 +5,16 @@
 #include <proxygen/httpserver/RequestHandler.h>
 #include <proxygen/httpserver/ResponseBuilder.h>
 
+#include <experimental/optional>
+
+template<class T>
+using Optional = std::experimental::optional<T>;
+
 class BoardThreadHandler : public proxygen::RequestHandler {
 public:
+    static const std::string URL_PREFIX;
+    static Optional<uint64_t> extractThreadNumber(const std::string& url);
+
     explicit BoardThreadHandler() {
         // Nothing
     }
@@ -36,7 +44,6 @@ public:
 private:
     void handleRequest(std::unique_ptr<proxygen::HTTPMessage> headers) noexcept;
 };
-
 
 class BoardThreadHandlerFactory : public proxygen::RequestHandlerFactory {
 public:
