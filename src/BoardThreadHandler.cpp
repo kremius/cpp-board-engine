@@ -13,30 +13,28 @@ using proxygen::ResponseBuilder;
 using proxygen::HTTPHeaderCode;
 
 void BoardThreadHandler::onRequest(
-    std::unique_ptr<proxygen::HTTPMessage> headers) noexcept
-{
+    std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     folly::EventBase* base = folly::EventBaseManager::get()->getEventBase();
 
-    folly::fibers::FiberManager::Options options;
-    // TODO: stack overflow on long numbers
-    options.stackSize = 16 * 1024;
-
-    folly::fibers::getFiberManager(*base, options).add(
+    folly::fibers::getFiberManager(*base).add(
     [this, headers = std::move(headers)]() mutable {
         handleRequest(std::move(headers));
     });
 }
 
 void BoardThreadHandler::handleRequest(
-    std::unique_ptr<proxygen::HTTPMessage> headers) noexcept
-{
+    std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     const auto& url = headers->getURL();
 
+    // TODO: remove regexes, because they exhaust stack
     static thread_local std::regex regex(R"(^/thread/([0-9]{1,20})/?$)");
     std::smatch match;
 
-    if (!std::regex_search(url.begin(), url.end(), match, regex))
-    {
+    auto result = folly::fibers::runInMainContext([&]() {
+        return std::regex_search(url.begin(), url.end(), match, regex);
+    });
+
+    if (!result) {
         const folly::dynamic value = folly::dynamic::object("thread", "Not Found");
         ResponseBuilder(downstream_)
             .status(404, "Not Found")
@@ -47,8 +45,7 @@ void BoardThreadHandler::handleRequest(
     }
 
     auto number = folly::tryTo<int64_t>(match.str(1));
-    if (!number)
-    {
+    if (!number) {
         const folly::dynamic value = folly::dynamic::object("thread", "Not Found");
         ResponseBuilder(downstream_)
             .status(404, "Not Found")
