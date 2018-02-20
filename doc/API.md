@@ -1,12 +1,12 @@
 # Board API
-Base protocol: **HTTP**.
-The API strives to be a REST-API.
+Base protocol: **HTTP**.  
+The API strives to be a REST-API.  
 Data format: **JSON** (both requests and responses).
 
 ### Base oprations
 
 #### 1. Retrieve boards list
-**Request**
+**Request**  
 `GET` to `/`
 
 **Response**
@@ -21,7 +21,7 @@ Data format: **JSON** (both requests and responses).
 ```
 
 #### 2. Retrieve board info
-**Request**
+**Request**  
 `GET` to `/<board>/info/` (e.g. to `/b/info/`)
 
 **Response**
@@ -34,8 +34,8 @@ Data format: **JSON** (both requests and responses).
 ```
 
 #### 3. Retrieve threads list
-**Request**
-`GET` to `/<board>/<page number>/` (e.g. to `/b/1/`)
+**Request**  
+`GET` to `/<board>/<page number>/` (e.g. to `/b/1/`)  
 Just `/<board>/` will route to zero page (`/b/0/`)
 
 **Response**
@@ -62,9 +62,9 @@ Just `/<board>/` will route to zero page (`/b/0/`)
 }
 ```
 #### 4. Retrieve post
-**Request**
-`GET` to `/<board>/<post number>/` (e.g. to `/b/42/`)
-In case of a thread it will be a list of posts in the thread, otherwise the list will contain only one entry.
+**Request**  
+`GET` to `/<board>/<post number>/` (e.g. to `/b/42/`)  
+In case of a thread it will be a list of posts in the thread, otherwise the list will contain only one entry.  
 **TODO:** some way to request an arbitrary list of posts.
 
 **Response**
@@ -85,7 +85,7 @@ In case of a thread it will be a list of posts in the thread, otherwise the list
 ```
 
 #### 5. Create thread
-**Request**
+**Request**  
 `POST` to `/<board>/`
 ```json
 {
@@ -102,7 +102,7 @@ In case of a thread it will be a list of posts in the thread, otherwise the list
 ```
 
 #### 5. Post message
-**Request**
+**Request**  
 `POST` to `/<board>/<thread number>/`
 ```json
 {
@@ -118,6 +118,6 @@ In case of a thread it will be a list of posts in the thread, otherwise the list
 }
 ```
 
-**TODO:** response HTTP codes
+**TODO:** response HTTP codes  
 **TODO:** errors responses
 
