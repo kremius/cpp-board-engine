@@ -61,30 +61,74 @@ Just `/<board>/` will route to zero page (`/b/0/`)
     ]
 }
 ```
-#### 4. Retrieve post
+A first element in the `posts` array is a thread id, others are thread preview posts. 
+
+#### 4. Retrieve thread info
 **Request**  
-`GET` to `/<board>/<post number>/` (e.g. to `/b/42/`)  
-In case of a thread it will be a list of posts in the thread, otherwise the list will contain only one entry.  
-**TODO:** some way to request an arbitrary list of posts.
+`GET` to `/<board>/<page number>/info/` (e.g. to `/b/1/info/`)  
+
+**Response**
+```json
+{
+    "posts": [
+        1,
+        2,
+        3,
+        4,
+        100,
+        200,
+        300,
+        400
+    ],
+    "images": 2
+}
+```
+
+#### 5. Retrieve posts
+**Request**  
+`GET` to `/<board>/posts?ids=<comma separated posts ids>` (e.g. to `/b/posts?ids=42,43`)  
+List of the posts in the requested order.
 
 **Response**
 ```json
 {
     "posts": [
         {
-            "number": 42,
+            "id": 42,
             "text": "Hello world!",
             "image": "cat.png"
         },
         {
-            "number": 43,
+            "id": 43,
             "text": "Hello world 2!"
         }
     ]
 }
 ```
 
-#### 5. Create thread
+#### 6. Retrieve posts in thread
+**Request**  
+`GET` to `/<board>/<thread id>/` (e.g. to `/b/42/`)  
+List of post in a thread.
+
+**Response**
+```json
+{
+    "posts": [
+        {
+            "id": 42,
+            "text": "Hello world!",
+            "image": "cat.png"
+        },
+        {
+            "id": 43,
+            "text": "Hello world 2!"
+        }
+    ]
+}
+```
+
+#### 7. Create thread
 **Request**  
 `POST` to `/<board>/`
 ```json
@@ -97,13 +141,13 @@ In case of a thread it will be a list of posts in the thread, otherwise the list
 **Response**
 ```json
 {
-    "post": 123
+    "id": 123
 }
 ```
 
-#### 5. Post message
+#### 8. Post message
 **Request**  
-`POST` to `/<board>/<thread number>/`
+`POST` to `/<board>/<thread id>/`
 ```json
 {
     "text": "Some stupid message!"
@@ -114,7 +158,7 @@ In case of a thread it will be a list of posts in the thread, otherwise the list
 **Response**
 ```json
 {
-    "post": 124
+    "id": 124
 }
 ```
 
