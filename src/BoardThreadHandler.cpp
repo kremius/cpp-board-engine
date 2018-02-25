@@ -12,8 +12,6 @@
 using proxygen::ResponseBuilder;
 using proxygen::HTTPHeaderCode;
 
-const std::string BoardThreadHandler::URL_PREFIX = "/thread/";
-
 void BoardThreadHandler::onRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     folly::EventBase* base = folly::EventBaseManager::get()->getEventBase();
@@ -25,10 +23,10 @@ void BoardThreadHandler::onRequest(
 }
 
 Optional<uint64_t> BoardThreadHandler::extractThreadNumber(const std::string& url) {
-    if (!boost::starts_with(url, URL_PREFIX)) {
+    if (!boost::starts_with(url, prefix_)) {
         return std::experimental::nullopt;
     }
-    const size_t start = URL_PREFIX.size();
+    const size_t start = prefix_.size();
     const size_t end = url.size();
 
     if (end <= start) {
@@ -70,5 +68,5 @@ void BoardThreadHandler::handleRequest(
 proxygen::RequestHandler* BoardThreadHandlerFactory::onRequest(
     proxygen::RequestHandler*,
     proxygen::HTTPMessage*) noexcept {
-    return new BoardThreadHandler;
+    return new BoardThreadHandler(prefix_);
 }
