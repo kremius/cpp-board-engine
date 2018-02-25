@@ -65,7 +65,7 @@ A first element in the `posts` array is a thread id, others are thread preview p
 
 #### 4. Retrieve thread info
 **Request**  
-`GET` to `/<board>/<page number>/info/` (e.g. to `/b/1/info/`)  
+`GET` to `/<board>/<thread id>/info/` (e.g. to `/b/1/info/`)  
 
 **Response**
 ```json
