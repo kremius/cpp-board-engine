@@ -3,6 +3,7 @@
 #include <folly/dynamic.h>
 #include <folly/futures/Future.h>
 #include <folly/FBVector.h>
+#include <folly/executors/CPUThreadPoolExecutor.h>
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/composite_key.hpp>
@@ -11,11 +12,12 @@
 #include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/member.hpp>
 
-namespace tags
-{
+namespace board {
+
+namespace tags {
 
 struct thread_post_asc {};
-struct post_asc {};
+struct post_hashed {};
 
 }
 
@@ -26,19 +28,19 @@ using boost::multi_index::tag;
 using boost::multi_index::member;
 using boost::multi_index::composite_key;
 
-class DataHolder
-{
+class DataHolder {
 public:
-    struct Record
-    {
+    struct Record {
         uint64_t post_id;
         uint64_t thread_id;
         folly::fbstring text;
         folly::fbstring image;
     };
-    using FuturePosts = folly::Future<folly::fbvector<Record>>;
+    using PostsType = folly::fbvector<Record>;
 
-    FuturePosts FetchThreadPosts(uint64_t thread_id);
+    DataHolder();
+
+    folly::Future<PostsType> FetchThreadPosts(uint64_t thread_id);
 private:
     using DataContainer
         = boost::multi_index_container<Record,
@@ -50,8 +52,12 @@ private:
                         member<Record, uint64_t, &Record::thread_id>,
                         member<Record, uint64_t, &Record::post_id>>>,
                 hashed_unique<
-                    tag<tags::post_asc>,
+                    tag<tags::post_hashed>,
                     member<Record, uint64_t, &Record::post_id>>>>;
 
     DataContainer container_;
+
+    folly::CPUThreadPoolExecutor executor_;
 };
+
+} // namespace board

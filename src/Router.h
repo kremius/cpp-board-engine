@@ -5,8 +5,7 @@
 #include <proxygen/httpserver/RequestHandler.h>
 #include <proxygen/httpserver/ResponseBuilder.h>
 
-struct Route
-{
+struct Route {
     std::string path;
     std::vector<proxygen::HTTPMethod> methods;
     std::unique_ptr<proxygen::RequestHandlerFactory> factory;
