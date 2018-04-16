@@ -29,33 +29,40 @@ using boost::multi_index::member;
 using boost::multi_index::composite_key;
 
 class DataHolder {
+    // TODO: current implementation is slow, can be made much better
 public:
-    struct Record {
+    struct Post {
+        Post(const Post& other) = default;
+        Post(Post&& other) = default;
+
         uint64_t post_id;
         uint64_t thread_id;
         folly::fbstring text;
         folly::fbstring image;
     };
-    using PostsType = folly::fbvector<Record>;
+    using PostsType = folly::fbvector<Post>;
 
     DataHolder();
 
     folly::Future<PostsType> FetchThreadPosts(uint64_t thread_id);
+    folly::Future<uint64_t> AddPostToThread(Post post);
+    folly::Future<uint64_t> CreateThread(Post post);
 private:
     using DataContainer
-        = boost::multi_index_container<Record,
+        = boost::multi_index_container<Post,
             indexed_by<
                 ordered_unique<
                     tag<tags::thread_post_asc>,
                     composite_key<
-                        Record,
-                        member<Record, uint64_t, &Record::thread_id>,
-                        member<Record, uint64_t, &Record::post_id>>>,
+                        Post,
+                        member<Post, uint64_t, &Post::thread_id>,
+                        member<Post, uint64_t, &Post::post_id>>>,
                 hashed_unique<
                     tag<tags::post_hashed>,
-                    member<Record, uint64_t, &Record::post_id>>>>;
+                    member<Post, uint64_t, &Post::post_id>>>>;
 
     DataContainer container_;
+    uint64_t post_id_;
 
     folly::CPUThreadPoolExecutor executor_;
 };
