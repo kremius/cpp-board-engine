@@ -44,9 +44,9 @@ public:
 
     DataHolder();
 
-    folly::Future<PostsType> FetchThreadPosts(uint64_t thread_id);
-    folly::Future<uint64_t> AddPostToThread(Post post);
     folly::Future<uint64_t> CreateThread(Post post);
+    folly::Future<uint64_t> AddPostToThread(Post post);
+    folly::Future<PostsType> FetchThreadPosts(uint64_t thread_id);
 private:
     using DataContainer
         = boost::multi_index_container<Post,
