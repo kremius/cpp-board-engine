@@ -37,7 +37,9 @@ TEST(DataHolder, ThreadAndPosts)
         EXPECT_EQ(posts[0].image, "image.png");
     }
 
+    // Thread not found
     EXPECT_THROW(holder.FetchThreadPosts(2).get(), std::runtime_error);
+    EXPECT_THROW(holder.AddPostToThread({0, 2, "", ""}).get(), std::runtime_error);
 
     {
         auto future = holder.CreateThread({0, 0, "another thread", ""});
@@ -53,7 +55,9 @@ TEST(DataHolder, ThreadAndPosts)
         EXPECT_EQ(posts[0].image, "");
     }
 
+    // Thread not found
     EXPECT_THROW(holder.FetchThreadPosts(3).get(), std::runtime_error);
+    EXPECT_THROW(holder.AddPostToThread({0, 3, "", ""}).get(), std::runtime_error);
 
     {
         auto future = holder.AddPostToThread({0, 1, "post1", ""});
