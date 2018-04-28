@@ -19,10 +19,12 @@ int main(int /*argc*/, char* argv[]) {
     options.shutdownOn = {SIGINT, SIGTERM};
     options.enableContentCompression = false;
 
+    auto data_holder = std::make_shared<board::DataHolder>();
+
     auto router = std::make_unique<RouterFactory>();
     router->addRoutes(RoutesChain()
-        .addThen<BoardThreadHandlerFactory>("/b/", {HTTPMethod::GET}, "/b/")
-        .addThen<BoardThreadHandlerFactory>("/vg/", {HTTPMethod::GET}, "/vg/")
+        .addThen<BoardThreadHandlerFactory>("/b/", {HTTPMethod::GET}, data_holder, "/b/")
+        .addThen<BoardThreadHandlerFactory>("/vg/", {HTTPMethod::GET}, data_holder, "/vg/")
         .build());
 
     options.handlerFactories = RequestHandlerChain()

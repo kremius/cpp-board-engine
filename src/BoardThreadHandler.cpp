@@ -57,6 +57,22 @@ void BoardThreadHandler::handleRequest(
     }
     const uint64_t number = maybe_thread_number.value();
 
+    auto future = data_holder_->FetchThreadPosts(number);
+    auto maybe_posts = future.getTry();
+
+    if (maybe_posts.hasException()) {
+        // It would be nice to reduce copy-paste here
+        const folly::dynamic value = folly::dynamic::object("thread", "Not Found");
+        ResponseBuilder(downstream_)
+            .status(404, "Not Found")
+            .header(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE, "application/json")
+            .body(folly::toJson(value))
+            .sendWithEOM();
+        return;
+    }
+
+    // auto& posts = maybe_posts.value();
+
     const folly::dynamic value = folly::dynamic::object("thread", number);
     ResponseBuilder(downstream_)
         .status(200, "OK")
@@ -68,5 +84,5 @@ void BoardThreadHandler::handleRequest(
 proxygen::RequestHandler* BoardThreadHandlerFactory::onRequest(
     proxygen::RequestHandler*,
     proxygen::HTTPMessage*) noexcept {
-    return new BoardThreadHandler(prefix_);
+    return new BoardThreadHandler(data_holder_, prefix_);
 }
