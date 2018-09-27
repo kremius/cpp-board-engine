@@ -58,6 +58,8 @@ void BoardThreadHandler::handleRequest(
     const uint64_t number = maybe_thread_number.value();
 
     auto future = data_holder_->FetchThreadPosts(number);
+    // TODO: blocking `getTry`
+    future.wait();
     auto maybe_posts = future.getTry();
 
     if (maybe_posts.hasException()) {
@@ -71,13 +73,19 @@ void BoardThreadHandler::handleRequest(
         return;
     }
 
-    // auto& posts = maybe_posts.value();
+    folly::dynamic array = folly::dynamic::array();
+    auto&& posts = maybe_posts.value();
+    for (const auto& post : posts)
+    {
+        array.push_back(
+            // TODO: no conversion from fbstring (?)
+            folly::dynamic::object("id", post.post_id)("text", post.text.c_str()));
+    }
 
-    const folly::dynamic value = folly::dynamic::object("thread", number);
     ResponseBuilder(downstream_)
         .status(200, "OK")
         .header(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE, "application/json")
-        .body(folly::toJson(value))
+        .body(folly::toJson(folly::dynamic::object("posts", array)))
         .sendWithEOM();
 }
 
