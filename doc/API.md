@@ -12,7 +12,7 @@ Data format: **JSON** (both requests and responses).
 **Response**
 ```json
 {
-    "boards" : [
+    "boards": [
         "b",
         "vg",
         "soc"
@@ -28,7 +28,7 @@ Data format: **JSON** (both requests and responses).
 ```json
 {
     "name": "b",
-    "description": "Everything you wanted to be, but was afraid to admit",
+    "description": "Everything you wanted to be, but were afraid to admit",
     "pages": 10
 }
 ```
