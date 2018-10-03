@@ -28,7 +28,7 @@ proxygen::RequestHandler* RouterFactory::onRequest(
         // TODO: bad method handler
         return nullptr;
     }
-    const auto method = std::array<proxygen::HTTPMethod, 1>{{maybe_method.get()}};
+    const auto method = std::array<proxygen::HTTPMethod, 1>{{maybe_method.value()}};
 
     auto it = boost::find_if(routes_, [message, method](const Route& route) {
         return    boost::contains(route.methods, method)

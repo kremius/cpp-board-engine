@@ -10,12 +10,12 @@ TEST(DataHolder, Empty)
 
     {
         auto future = holder.FetchThreadPosts(0);
-        EXPECT_THROW(future.get(), std::runtime_error);
+        EXPECT_THROW(std::move(future).get(), std::runtime_error);
     }
 
     {
         auto future = holder.FetchThreadPosts(42);
-        EXPECT_THROW(future.get(), std::runtime_error);
+        EXPECT_THROW(std::move(future).get(), std::runtime_error);
     }
 }
 
@@ -25,7 +25,7 @@ TEST(DataHolder, ThreadAndPosts)
 
     {
         auto future = holder.CreateThread({0, 0, "hello world", "image.png"});
-        const uint64_t thread_id = future.get();
+        const uint64_t thread_id = std::move(future).get();
         ASSERT_EQ(thread_id, 1);
     }
     {
@@ -43,7 +43,7 @@ TEST(DataHolder, ThreadAndPosts)
 
     {
         auto future = holder.CreateThread({0, 0, "another thread", ""});
-        const uint64_t thread_id = future.get();
+        const uint64_t thread_id = std::move(future).get();
         ASSERT_EQ(thread_id, 2);
     }
     {
@@ -61,7 +61,7 @@ TEST(DataHolder, ThreadAndPosts)
 
     {
         auto future = holder.AddPostToThread({0, 1, "post1", ""});
-        const uint64_t post_id = future.get();
+        const uint64_t post_id = std::move(future).get();
         ASSERT_EQ(post_id, 3);
     }
     {
@@ -79,12 +79,12 @@ TEST(DataHolder, ThreadAndPosts)
 
     for (const int i : boost::irange(0, 1000)) {
         auto future = holder.AddPostToThread({0, 1, "post", "image"});
-        const uint64_t post_id = future.get();
+        const uint64_t post_id = std::move(future).get();
         ASSERT_EQ(post_id, i + 4);
     }
     {
         auto future = holder.AddPostToThread({0, 2, "post2", "image2"});
-        const uint64_t post_id = future.get();
+        const uint64_t post_id = std::move(future).get();
         ASSERT_EQ(post_id, 1004);
     }
     {
