@@ -57,10 +57,7 @@ void BoardThreadHandler::handleRequest(
     }
     const uint64_t number = maybe_thread_number.value();
 
-    auto future = data_holder_->FetchThreadPosts(number);
-    // TODO: blocking `getTry`
-    future.wait();
-    auto maybe_posts = future.getTry();
+    auto maybe_posts = data_holder_->FetchThreadPosts(number).getTry();
 
     if (maybe_posts.hasException()) {
         // It would be nice to reduce copy-paste here

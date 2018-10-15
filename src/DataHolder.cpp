@@ -10,9 +10,9 @@ DataHolder::DataHolder()
     // Nothing
 }
 
-folly::Future<DataHolder::PostsType> DataHolder::FetchThreadPosts(uint64_t thread_id) {
+folly::SemiFuture<DataHolder::PostsType> DataHolder::FetchThreadPosts(uint64_t thread_id) {
     folly::Promise<PostsType> promise;
-    folly::Future<PostsType> future = promise.getFuture();
+    folly::SemiFuture<PostsType> future = promise.getSemiFuture();
 
     executor_.add([this, thread_id, promise = std::move(promise)]() mutable {
         auto&& view = container_.get<tags::thread_post_asc>();
