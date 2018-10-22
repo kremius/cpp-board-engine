@@ -44,8 +44,8 @@ public:
 
     DataHolder();
 
-    folly::Future<uint64_t> CreateThread(Post post);
-    folly::Future<uint64_t> AddPostToThread(Post post);
+    folly::SemiFuture<uint64_t> CreateThread(Post post);
+    folly::SemiFuture<uint64_t> AddPostToThread(Post post);
     folly::SemiFuture<PostsType> FetchThreadPosts(uint64_t thread_id);
 private:
     using DataContainer
