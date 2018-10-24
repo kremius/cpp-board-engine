@@ -5,16 +5,12 @@
 #include <proxygen/httpserver/RequestHandler.h>
 #include <proxygen/httpserver/ResponseBuilder.h>
 
-#include <experimental/optional>
-
 #include "DataHolder.h"
-
-template<class T>
-using Optional = std::experimental::optional<T>;
+#include "Utils.h"
 
 class BoardThreadHandler : public proxygen::RequestHandler {
 public:
-    Optional<uint64_t> extractThreadNumber(const std::string& url);
+    utils::Optional<uint64_t> extractThreadNumber(const std::string& url);
 
     explicit BoardThreadHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
         : prefix_(std::move(prefix)),

@@ -19,7 +19,7 @@ namespace tags {
 struct thread_post_asc {};
 struct post_hashed {};
 
-}
+} // namespace tags
 
 using boost::multi_index::indexed_by;
 using boost::multi_index::ordered_unique;
