@@ -2,6 +2,7 @@
 
 #include <glog/logging.h>
 
+#include "BoardPostHandler.h"
 #include "BoardThreadHandler.h"
 #include "Router.h"
 
@@ -24,7 +25,7 @@ int main(int /*argc*/, char* argv[]) {
     auto router = std::make_unique<RouterFactory>();
     router->addRoutes(RoutesChain()
         .addThen<BoardThreadHandlerFactory>("/b/", {HTTPMethod::GET}, data_holder, "/b/")
-        .addThen<BoardThreadHandlerFactory>("/vg/", {HTTPMethod::GET}, data_holder, "/vg/")
+        .addThen<BoardPostHandlerFactory>("/b/", {HTTPMethod::POST}, data_holder, "/b/")
         .build());
 
     options.handlerFactories = RequestHandlerChain()

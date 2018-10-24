@@ -1,4 +1,4 @@
-#include "BoardThreadHandler.h"
+#include "BoardPostHandler.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -12,7 +12,7 @@
 using proxygen::ResponseBuilder;
 using proxygen::HTTPHeaderCode;
 
-void BoardThreadHandler::onRequest(
+void BoardPostHandler::onRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     folly::EventBase* base = folly::EventBaseManager::get()->getEventBase();
 
@@ -22,7 +22,7 @@ void BoardThreadHandler::onRequest(
     });
 }
 
-Optional<uint64_t> BoardThreadHandler::extractThreadNumber(const std::string& url) {
+Optional<uint64_t> BoardPostHandler::extractThreadNumber(const std::string& url) {
     if (!boost::starts_with(url, prefix_)) {
         return {};
     }
@@ -42,7 +42,7 @@ Optional<uint64_t> BoardThreadHandler::extractThreadNumber(const std::string& ur
     return number;
 }
 
-void BoardThreadHandler::handleRequest(
+void BoardPostHandler::handleRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     const auto& url = headers->getURL();
     const auto maybe_thread_number = extractThreadNumber(url);
@@ -57,37 +57,16 @@ void BoardThreadHandler::handleRequest(
     }
     const uint64_t number = maybe_thread_number.value();
 
-    auto maybe_posts = data_holder_->FetchThreadPosts(number).getTry();
-
-    if (maybe_posts.hasException()) {
-        // TODO: It would be nice to reduce copy-paste here
-        const folly::dynamic value = folly::dynamic::object("thread", "Not Found");
-        ResponseBuilder(downstream_)
-            .status(404, "Not Found")
-            .header(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE, "application/json")
-            .body(folly::toJson(value))
-            .sendWithEOM();
-        return;
-    }
-
-    folly::dynamic array = folly::dynamic::array();
-    auto&& posts = maybe_posts.value();
-    for (const auto& post : posts)
-    {
-        array.push_back(
-            // TODO: no conversion from fbstring (?)
-            folly::dynamic::object("id", post.post_id)("text", post.text.c_str()));
-    }
-
+    // TODO
     ResponseBuilder(downstream_)
         .status(200, "OK")
         .header(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE, "application/json")
-        .body(folly::toJson(folly::dynamic::object("posts", array)))
+        .body(folly::toJson(folly::dynamic::object("number", number)))
         .sendWithEOM();
 }
 
-proxygen::RequestHandler* BoardThreadHandlerFactory::onRequest(
+proxygen::RequestHandler* BoardPostHandlerFactory::onRequest(
     proxygen::RequestHandler*,
     proxygen::HTTPMessage*) noexcept {
-    return new BoardThreadHandler(data_holder_, prefix_);
+    return new BoardPostHandler(data_holder_, prefix_);
 }
