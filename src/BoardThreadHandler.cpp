@@ -24,19 +24,19 @@ void BoardThreadHandler::onRequest(
 
 Optional<uint64_t> BoardThreadHandler::extractThreadNumber(const std::string& url) {
     if (!boost::starts_with(url, prefix_)) {
-        return std::experimental::nullopt;
+        return {};
     }
     const size_t start = prefix_.size();
     const size_t end = url.size();
 
     if (end <= start) {
-        return std::experimental::nullopt;
+        return {};
     }
 
     folly::fbstring after_perfix(&url[start], end - start);
     auto maybe_number = folly::tryTo<uint64_t>(after_perfix);
     if (!maybe_number) {
-        return std::experimental::nullopt;
+        return {};
     }
     const uint64_t number = maybe_number.value();
     return number;
