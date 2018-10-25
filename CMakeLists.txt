@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 project(CppBoardEngine)
 
 option(BUILD_COVER "Generate test coverage" OFF)
@@ -23,10 +23,10 @@ set(LINK_LIBRARIES_LIST
 
 set(MAIN_FILE "src/main.cpp")
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/${MAIN_FILE}")
 
-file(GLOB_RECURSE HEADERS "src/*.h")
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "src/*.h")
 
 add_library(cpp-board-engine-objects OBJECT ${SOURCES} ${HEADERS})
 add_executable(cpp-board-engine ${MAIN_FILE} $<TARGET_OBJECTS:cpp-board-engine-objects>)
