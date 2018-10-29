@@ -25,7 +25,13 @@ public:
         if (!body_) {
             body_ = std::move(body);
         }
-        body_->appendChain(std::move(body));
+        body_->prependChain(std::move(body));
+    }
+
+    std::unique_ptr<folly::IOBuf> getBody() {
+        full_body_baton_.wait();
+        body_->coalesce();
+        return std::move(body_);
     }
 
     void onEOM() noexcept final {
@@ -41,6 +47,8 @@ public:
     }
 
     void onError(proxygen::ProxygenError /*err*/) noexcept final {
+        // TODO: schedule for deletion, because
+        // it can happen when handler waits for future, etc
         delete this;
     }
 private:

@@ -9,12 +9,12 @@ TEST(DataHolder, Empty)
     board::DataHolder holder;
 
     {
-        auto future = holder.FetchThreadPosts(0);
+        auto future = holder.fetchThreadPosts(0);
         EXPECT_THROW(std::move(future).get(), std::runtime_error);
     }
 
     {
-        auto future = holder.FetchThreadPosts(42);
+        auto future = holder.fetchThreadPosts(42);
         EXPECT_THROW(std::move(future).get(), std::runtime_error);
     }
 }
@@ -24,12 +24,12 @@ TEST(DataHolder, ThreadAndPosts)
     board::DataHolder holder;
 
     {
-        auto future = holder.CreateThread({0, 0, "hello world", "image.png"});
+        auto future = holder.createThread({0, 0, "hello world", "image.png"});
         const uint64_t thread_id = std::move(future).get();
         ASSERT_EQ(thread_id, 1);
     }
     {
-        const board::DataHolder::PostsType posts = holder.FetchThreadPosts(1).get();
+        const board::DataHolder::PostsType posts = holder.fetchThreadPosts(1).get();
         ASSERT_EQ(posts.size(), 1);
         EXPECT_EQ(posts[0].post_id, 1);
         EXPECT_EQ(posts[0].thread_id, 1);
@@ -38,16 +38,16 @@ TEST(DataHolder, ThreadAndPosts)
     }
 
     // Thread not found
-    EXPECT_THROW(holder.FetchThreadPosts(2).get(), std::runtime_error);
-    EXPECT_THROW(holder.AddPostToThread({0, 2, "", ""}).get(), std::runtime_error);
+    EXPECT_THROW(holder.fetchThreadPosts(2).get(), std::runtime_error);
+    EXPECT_THROW(holder.addPostToThread({0, 2, "", ""}).get(), std::runtime_error);
 
     {
-        auto future = holder.CreateThread({0, 0, "another thread", ""});
+        auto future = holder.createThread({0, 0, "another thread", ""});
         const uint64_t thread_id = std::move(future).get();
         ASSERT_EQ(thread_id, 2);
     }
     {
-        const board::DataHolder::PostsType posts = holder.FetchThreadPosts(2).get();
+        const board::DataHolder::PostsType posts = holder.fetchThreadPosts(2).get();
         ASSERT_EQ(posts.size(), 1);
         EXPECT_EQ(posts[0].post_id, 2);
         EXPECT_EQ(posts[0].thread_id, 2);
@@ -56,16 +56,16 @@ TEST(DataHolder, ThreadAndPosts)
     }
 
     // Thread not found
-    EXPECT_THROW(holder.FetchThreadPosts(3).get(), std::runtime_error);
-    EXPECT_THROW(holder.AddPostToThread({0, 3, "", ""}).get(), std::runtime_error);
+    EXPECT_THROW(holder.fetchThreadPosts(3).get(), std::runtime_error);
+    EXPECT_THROW(holder.addPostToThread({0, 3, "", ""}).get(), std::runtime_error);
 
     {
-        auto future = holder.AddPostToThread({0, 1, "post1", ""});
+        auto future = holder.addPostToThread({0, 1, "post1", ""});
         const uint64_t post_id = std::move(future).get();
         ASSERT_EQ(post_id, 3);
     }
     {
-        const board::DataHolder::PostsType posts = holder.FetchThreadPosts(1).get();
+        const board::DataHolder::PostsType posts = holder.fetchThreadPosts(1).get();
         ASSERT_EQ(posts.size(), 2);
         EXPECT_EQ(posts[0].post_id, 1);
         EXPECT_EQ(posts[0].thread_id, 1);
@@ -78,17 +78,17 @@ TEST(DataHolder, ThreadAndPosts)
     }
 
     for (const int i : boost::irange(0, 1000)) {
-        auto future = holder.AddPostToThread({0, 1, "post", "image"});
+        auto future = holder.addPostToThread({0, 1, "post", "image"});
         const uint64_t post_id = std::move(future).get();
         ASSERT_EQ(post_id, i + 4);
     }
     {
-        auto future = holder.AddPostToThread({0, 2, "post2", "image2"});
+        auto future = holder.addPostToThread({0, 2, "post2", "image2"});
         const uint64_t post_id = std::move(future).get();
         ASSERT_EQ(post_id, 1004);
     }
     {
-        const board::DataHolder::PostsType posts = holder.FetchThreadPosts(1).get();
+        const board::DataHolder::PostsType posts = holder.fetchThreadPosts(1).get();
         ASSERT_EQ(posts.size(), 1002);
         EXPECT_EQ(posts[0].post_id, 1);
         EXPECT_EQ(posts[0].thread_id, 1);
@@ -106,7 +106,7 @@ TEST(DataHolder, ThreadAndPosts)
         }
     }
     {
-        const board::DataHolder::PostsType posts = holder.FetchThreadPosts(2).get();
+        const board::DataHolder::PostsType posts = holder.fetchThreadPosts(2).get();
         ASSERT_EQ(posts.size(), 2);
         EXPECT_EQ(posts[0].post_id, 2);
         EXPECT_EQ(posts[0].thread_id, 2);

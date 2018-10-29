@@ -10,7 +10,7 @@ DataHolder::DataHolder()
     // Nothing
 }
 
-folly::SemiFuture<DataHolder::PostsType> DataHolder::FetchThreadPosts(uint64_t thread_id) {
+folly::SemiFuture<DataHolder::PostsType> DataHolder::fetchThreadPosts(uint64_t thread_id) {
     folly::Promise<PostsType> promise;
     folly::SemiFuture<PostsType> future = promise.getSemiFuture();
 
@@ -36,7 +36,7 @@ folly::SemiFuture<DataHolder::PostsType> DataHolder::FetchThreadPosts(uint64_t t
     return future;
 }
 
-folly::SemiFuture<uint64_t> DataHolder::AddPostToThread(DataHolder::Post post) {
+folly::SemiFuture<uint64_t> DataHolder::addPostToThread(DataHolder::Post post) {
     folly::Promise<uint64_t> promise;
     folly::Future<uint64_t> future = promise.getFuture();
 
@@ -57,7 +57,7 @@ folly::SemiFuture<uint64_t> DataHolder::AddPostToThread(DataHolder::Post post) {
     return future;
 }
 
-folly::SemiFuture<uint64_t> DataHolder::CreateThread(DataHolder::Post post)
+folly::SemiFuture<uint64_t> DataHolder::createThread(DataHolder::Post post)
 {
     folly::Promise<uint64_t> promise;
     folly::Future<uint64_t> future = promise.getFuture();
