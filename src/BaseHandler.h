@@ -14,7 +14,10 @@ class BaseHandler : public proxygen::RequestHandler {
 public:
     explicit BaseHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
         : prefix_(std::move(prefix)),
-          data_holder_(std::move(holder)) {
+          data_holder_(std::move(holder)),
+          is_deletion_scheduled_(false),
+          is_finished_(false)
+    {
         // Nothing
     }
 
@@ -28,8 +31,12 @@ public:
         body_->prependChain(std::move(body));
     }
 
-    std::unique_ptr<folly::IOBuf> getBody() {
+    using MaybeBody = utils::Optional<std::unique_ptr<folly::IOBuf>>;
+    MaybeBody getBody() {
         full_body_baton_.wait();
+        if (isDeletionScheduled()) {
+            return {};
+        }
         body_->coalesce();
         return std::move(body_);
     }
@@ -43,22 +50,43 @@ public:
     }
 
     void requestComplete() noexcept final {
-        delete this;
+        scheduleDeletion();
     }
 
     void onError(proxygen::ProxygenError /*err*/) noexcept final {
-        // TODO: schedule for deletion, because
-        // it can happen when handler waits for future, etc
+        // TODO: log error
+        scheduleDeletion();
+    }
+protected:
+    virtual void handleRequest(std::unique_ptr<proxygen::HTTPMessage> headers) noexcept = 0;
+
+    bool isDeletionScheduled() const {
+        return is_deletion_scheduled_;
+    }
+    bool isFinished() const {
+        return is_finished_;
+    }
+    void tryDelete() {
+        if (!is_finished_ || !is_deletion_scheduled_) {
+            return;
+        }
         delete this;
     }
 private:
-    virtual void handleRequest(std::unique_ptr<proxygen::HTTPMessage> headers) noexcept = 0;
+    void scheduleDeletion() {
+        full_body_baton_.post();
+        is_deletion_scheduled_ = true;
+        tryDelete();
+    }
 
     folly::fbstring prefix_;
     std::shared_ptr<board::DataHolder> data_holder_;
 
     std::unique_ptr<folly::IOBuf> body_;
     folly::fibers::Baton full_body_baton_;
+
+    bool is_deletion_scheduled_;
+    bool is_finished_;
 };
 
 } // namespace board

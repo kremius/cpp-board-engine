@@ -11,6 +11,8 @@ void BaseHandler::onRequest(
     folly::fibers::getFiberManager(*base).add(
     [this, headers = std::move(headers)]() mutable {
         handleRequest(std::move(headers));
+        is_finished_ = true;
+        tryDelete();
     });
 }
 
