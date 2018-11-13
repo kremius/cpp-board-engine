@@ -5,11 +5,11 @@
 
 namespace board {
 
-class BoardThreadHandler : public BaseHandler {
+class ThreadHandler : public BaseHandler {
 public:
     utils::Optional<uint64_t> extractThreadNumber(const std::string& url);
 
-    explicit BoardThreadHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
+    explicit ThreadHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
         : BaseHandler(prefix),
           data_holder_(holder) {
         // Nothing
@@ -19,9 +19,9 @@ private:
     std::shared_ptr<board::DataHolder> data_holder_;
 };
 
-class BoardThreadHandlerFactory : public proxygen::RequestHandlerFactory {
+class ThreadHandlerFactory : public proxygen::RequestHandlerFactory {
 public:
-    BoardThreadHandlerFactory(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
+    ThreadHandlerFactory(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
         : prefix_(std::move(prefix)),
           data_holder_(holder) {
         // Nothing

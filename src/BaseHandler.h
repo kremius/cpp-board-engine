@@ -26,6 +26,7 @@ public:
     void onBody(std::unique_ptr<folly::IOBuf> body) noexcept final {
         if (!body_) {
             body_ = std::move(body);
+            return;
         }
         body_->prependChain(std::move(body));
     }

@@ -14,7 +14,7 @@ using proxygen::HTTPHeaderCode;
 
 namespace board {
 
-utils::Optional<uint64_t> BoardThreadHandler::extractThreadNumber(const std::string& url) {
+utils::Optional<uint64_t> ThreadHandler::extractThreadNumber(const std::string& url) {
     if (!boost::starts_with(url, getPrefix())) {
         return {};
     }
@@ -34,7 +34,7 @@ utils::Optional<uint64_t> BoardThreadHandler::extractThreadNumber(const std::str
     return number;
 }
 
-void BoardThreadHandler::handleRequest(
+void ThreadHandler::handleRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     const auto& url = headers->getURL();
     const auto maybe_thread_number = extractThreadNumber(url);
@@ -78,10 +78,10 @@ void BoardThreadHandler::handleRequest(
         .sendWithEOM();
 }
 
-proxygen::RequestHandler* BoardThreadHandlerFactory::onRequest(
+proxygen::RequestHandler* ThreadHandlerFactory::onRequest(
     proxygen::RequestHandler*,
     proxygen::HTTPMessage*) noexcept {
-    return new BoardThreadHandler(data_holder_, prefix_);
+    return new ThreadHandler(data_holder_, prefix_);
 }
 
 } // namespace board
