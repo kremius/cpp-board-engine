@@ -12,9 +12,8 @@ namespace board {
 
 class BaseHandler : public proxygen::RequestHandler {
 public:
-    explicit BaseHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
+    explicit BaseHandler(folly::fbstring prefix)
         : prefix_(std::move(prefix)),
-          data_holder_(std::move(holder)),
           is_deletion_scheduled_(false),
           is_finished_(false)
     {
@@ -72,6 +71,10 @@ protected:
         }
         delete this;
     }
+
+    const folly::fbstring& getPrefix() const {
+        return prefix_;
+    }
 private:
     void scheduleDeletion() {
         full_body_baton_.post();
@@ -80,7 +83,6 @@ private:
     }
 
     folly::fbstring prefix_;
-    std::shared_ptr<board::DataHolder> data_holder_;
 
     std::unique_ptr<folly::IOBuf> body_;
     folly::fibers::Baton full_body_baton_;

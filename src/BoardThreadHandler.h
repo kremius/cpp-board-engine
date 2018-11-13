@@ -1,49 +1,21 @@
 #pragma once
 
-#include <proxygen/httpserver/HTTPServer.h>
-#include <proxygen/httpserver/RequestHandlerFactory.h>
-#include <proxygen/httpserver/RequestHandler.h>
-#include <proxygen/httpserver/ResponseBuilder.h>
-
+#include "BaseHandler.h"
 #include "DataHolder.h"
-#include "Utils.h"
 
-class BoardThreadHandler : public proxygen::RequestHandler {
+namespace board {
+
+class BoardThreadHandler : public BaseHandler {
 public:
     utils::Optional<uint64_t> extractThreadNumber(const std::string& url);
 
     explicit BoardThreadHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
-        : prefix_(std::move(prefix)),
+        : BaseHandler(prefix),
           data_holder_(holder) {
         // Nothing
     }
-
-    void onRequest(std::unique_ptr<proxygen::HTTPMessage> headers)
-        noexcept override;
-
-    void onBody(std::unique_ptr<folly::IOBuf> /*body*/) noexcept override {
-        // Nothing
-    }
-
-    void onEOM() noexcept override {
-        // Nothing
-    }
-
-    void onUpgrade(proxygen::UpgradeProtocol /*proto*/) noexcept override {
-        // Nothing
-    }
-
-    void requestComplete() noexcept override {
-        delete this;
-    }
-
-    void onError(proxygen::ProxygenError /*err*/) noexcept override {
-        delete this;
-    }
 private:
-    void handleRequest(std::unique_ptr<proxygen::HTTPMessage> headers) noexcept;
-
-    folly::fbstring prefix_;
+    void handleRequest(std::unique_ptr<proxygen::HTTPMessage> headers) noexcept override;
     std::shared_ptr<board::DataHolder> data_holder_;
 };
 
@@ -69,3 +41,5 @@ private:
     folly::fbstring prefix_;
     std::shared_ptr<board::DataHolder> data_holder_;
 };
+
+} // namespace board

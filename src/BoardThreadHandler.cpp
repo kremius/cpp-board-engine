@@ -12,21 +12,13 @@
 using proxygen::ResponseBuilder;
 using proxygen::HTTPHeaderCode;
 
-void BoardThreadHandler::onRequest(
-    std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
-    folly::EventBase* base = folly::EventBaseManager::get()->getEventBase();
-
-    folly::fibers::getFiberManager(*base).add(
-    [this, headers = std::move(headers)]() mutable {
-        handleRequest(std::move(headers));
-    });
-}
+namespace board {
 
 utils::Optional<uint64_t> BoardThreadHandler::extractThreadNumber(const std::string& url) {
-    if (!boost::starts_with(url, prefix_)) {
+    if (!boost::starts_with(url, getPrefix())) {
         return {};
     }
-    const size_t start = prefix_.size();
+    const size_t start = getPrefix().size();
     const size_t end = url.size();
 
     if (end <= start) {
@@ -91,3 +83,5 @@ proxygen::RequestHandler* BoardThreadHandlerFactory::onRequest(
     proxygen::HTTPMessage*) noexcept {
     return new BoardThreadHandler(data_holder_, prefix_);
 }
+
+} // namespace board

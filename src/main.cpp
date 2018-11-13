@@ -24,7 +24,7 @@ int main(int /*argc*/, char* argv[]) {
 
     auto router = std::make_unique<RouterFactory>();
     router->addRoutes(RoutesChain()
-        .addThen<BoardThreadHandlerFactory>("/b/", {HTTPMethod::GET}, data_holder, "/b/")
+        .addThen<board::BoardThreadHandlerFactory>("/b/", {HTTPMethod::GET}, data_holder, "/b/")
         .addThen<BoardPostHandlerFactory>("/b/", {HTTPMethod::POST}, data_holder, "/b/")
         .build());
 
