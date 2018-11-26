@@ -92,4 +92,30 @@ private:
     bool is_finished_;
 };
 
+template<class HandlerType>
+class BaseHandlerFactory final : public proxygen::RequestHandlerFactory {
+public:
+    BaseHandlerFactory(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
+        : prefix_(std::move(prefix)),
+          data_holder_(holder) {
+        // Nothing
+    }
+    void onServerStart(folly::EventBase* /*evb*/) noexcept override {
+        // Nothing
+    }
+
+    void onServerStop() noexcept override {
+        // Nothing
+    }
+
+    proxygen::RequestHandler* onRequest(
+        proxygen::RequestHandler*,
+        proxygen::HTTPMessage*) noexcept override {
+        return new HandlerType(data_holder_, prefix_);
+    }
+private:
+    folly::fbstring prefix_;
+    std::shared_ptr<board::DataHolder> data_holder_;
+};
+
 } // namespace board

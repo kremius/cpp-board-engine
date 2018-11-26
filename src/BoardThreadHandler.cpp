@@ -78,10 +78,4 @@ void ThreadHandler::handleRequest(
         .sendWithEOM();
 }
 
-proxygen::RequestHandler* ThreadHandlerFactory::onRequest(
-    proxygen::RequestHandler*,
-    proxygen::HTTPMessage*) noexcept {
-    return new ThreadHandler(data_holder_, prefix_);
-}
-
 } // namespace board
