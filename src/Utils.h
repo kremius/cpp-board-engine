@@ -14,7 +14,7 @@ using Optional = std::experimental::optional<T>;
 
 using string_view = std::experimental::string_view;
 
-inline utils::Optional<uint64_t> extractThreadNumber(const string_view& url, const string_view& prefix) {
+inline utils::Optional<uint64_t> extractThreadNumber(string_view url, string_view prefix) {
     if (!boost::starts_with(url, prefix)) {
         return {};
     }

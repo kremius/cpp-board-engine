@@ -7,8 +7,6 @@ namespace board {
 
 class ThreadHandler : public BaseHandler {
 public:
-    utils::Optional<uint64_t> extractThreadNumber(const std::string& url);
-
     explicit ThreadHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
         : BaseHandler(prefix),
           data_holder_(holder) {

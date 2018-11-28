@@ -14,30 +14,10 @@ using proxygen::HTTPHeaderCode;
 
 namespace board {
 
-utils::Optional<uint64_t> ThreadHandler::extractThreadNumber(const std::string& url) {
-    if (!boost::starts_with(url, getPrefix())) {
-        return {};
-    }
-    const size_t start = getPrefix().size();
-    const size_t end = url.size();
-
-    if (end <= start) {
-        return {};
-    }
-
-    folly::fbstring after_perfix(&url[start], end - start);
-    auto maybe_number = folly::tryTo<uint64_t>(after_perfix);
-    if (!maybe_number) {
-        return {};
-    }
-    const uint64_t number = maybe_number.value();
-    return number;
-}
-
 void ThreadHandler::handleRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     const auto& url = headers->getURL();
-    const auto maybe_thread_number = extractThreadNumber(url);
+    const auto maybe_thread_number = utils::extractThreadNumber(url, getPrefix());
     if (!maybe_thread_number) {
         const folly::dynamic value = folly::dynamic::object("thread", "Not Found");
         ResponseBuilder(downstream_)

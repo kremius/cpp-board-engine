@@ -73,8 +73,8 @@ protected:
         delete this;
     }
 
-    const folly::fbstring& getPrefix() const {
-        return prefix_;
+    utils::string_view getPrefix() const {
+        return utils::string_view(prefix_.data(), prefix_.size());
     }
 private:
     void scheduleDeletion() {
