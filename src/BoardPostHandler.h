@@ -10,7 +10,7 @@
 
 class BoardPostHandler : public proxygen::RequestHandler {
 public:
-    utils::Optional<uint64_t> extractThreadNumber(const std::string& url);
+    utils::optional<uint64_t> extractThreadNumber(const std::string& url);
 
     explicit BoardPostHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
         : prefix_(std::move(prefix)),

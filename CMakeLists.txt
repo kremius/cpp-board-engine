@@ -33,7 +33,7 @@ add_executable(cpp-board-engine ${MAIN_FILE} $<TARGET_OBJECTS:cpp-board-engine-o
 
 target_link_libraries(cpp-board-engine ${LINK_LIBRARIES_LIST})
 
-file(GLOB_RECURSE TESTS "test/*.cpp")
+file(GLOB_RECURSE TESTS CONFIGURE_DEPENDS "test/*.cpp")
 add_executable(cpp-board-engine-tests ${TESTS} $<TARGET_OBJECTS:cpp-board-engine-objects>)
 
 target_include_directories(cpp-board-engine-tests PRIVATE "src/")

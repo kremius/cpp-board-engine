@@ -31,7 +31,7 @@ public:
         body_->prependChain(std::move(body));
     }
 
-    using MaybeBody = utils::Optional<std::unique_ptr<folly::IOBuf>>;
+    using MaybeBody = utils::optional<std::unique_ptr<folly::IOBuf>>;
     MaybeBody getBody() {
         full_body_baton_.wait();
         if (isDeletionScheduled()) {

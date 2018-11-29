@@ -22,7 +22,7 @@ void BoardPostHandler::onRequest(
     });
 }
 
-utils::Optional<uint64_t> BoardPostHandler::extractThreadNumber(const std::string& url) {
+utils::optional<uint64_t> BoardPostHandler::extractThreadNumber(const std::string& url) {
     if (!boost::starts_with(url, prefix_)) {
         return {};
     }
