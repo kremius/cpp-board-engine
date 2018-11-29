@@ -28,8 +28,12 @@ list(REMOVE_ITEM SOURCES "${CMAKE_SOURCE_DIR}/${MAIN_FILE}")
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "src/*.h")
 
+set(STRICT_OPTIONS -Wall -Wextra -Werror -ansi)
+
 add_library(cpp-board-engine-objects OBJECT ${SOURCES} ${HEADERS})
+target_compile_options(cpp-board-engine-objects PRIVATE ${STRICT_OPTIONS})
 add_executable(cpp-board-engine ${MAIN_FILE} $<TARGET_OBJECTS:cpp-board-engine-objects>)
+target_compile_options(cpp-board-engine PRIVATE ${STRICT_OPTIONS})
 
 target_link_libraries(cpp-board-engine ${LINK_LIBRARIES_LIST})
 

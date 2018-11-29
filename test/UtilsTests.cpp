@@ -15,7 +15,7 @@ TEST(Utils, ExtractThreadNumber)
     EXPECT_EQ(utils::extractThreadNumber("prefix0", "prefix"), result_type{0});
     EXPECT_EQ(
         utils::extractThreadNumber("prefix18446744073709551615", "prefix"),
-        result_type{18446744073709551615});
+        result_type{18446744073709551615UL});
     EXPECT_EQ(
         utils::extractThreadNumber("prefix18446744073709551616", "prefix"),
         result_type{});
