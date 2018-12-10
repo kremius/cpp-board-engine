@@ -13,11 +13,14 @@ find_package(Threads REQUIRED)
 find_package(Proxygen REQUIRED)
 # TODO: proper boost_context library search
 
+find_package(DoubleConversion REQUIRED)
+
 include(GoogleTest)
 
 set(LINK_LIBRARIES_LIST
     ${PROXYGEN_LIBRARIES}
     boost_context
+    ${DOUBLE_CONVERSION_LIBRARY}
     # For some reasons pthread library should be explicitly linked last
     Threads::Threads)
 
@@ -52,7 +55,6 @@ set(GTEST_LIBRARIES_LIST
     gtest
     gmock
     gmock_main)
-
 target_link_libraries(cpp-board-engine-tests ${GTEST_LIBRARIES_LIST})
 
 if(BUILD_COVER)
