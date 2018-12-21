@@ -27,7 +27,10 @@ TEST(JsonResponse, BuildJsonResponse)
 
     using ::testing::_;
     using ::testing::Property;
+    using ::testing::Invoke;
+    using ::testing::Return;
     using proxygen::HTTPMessage;
+
     const auto headers_matcher = AllOf(
         Property(&HTTPMessage::getStatusCode, 42),
         Property(&HTTPMessage::getStatusMessage, "test message"),
@@ -36,6 +39,14 @@ TEST(JsonResponse, BuildJsonResponse)
                 sendHeaders(headers_matcher))
         .Times(1)
         .InSequence(sequence);
+    folly::fbstring body;
+    EXPECT_CALL(response, sendBody(_)).WillOnce(
+        DoAll(
+            Invoke([&] (std::shared_ptr<folly::IOBuf> b) {
+                // TODO: use moveToFbString in other code too
+                body = b->moveToFbString();
+            }),
+            Return()));
 
     EXPECT_CALL(response, sendEOM())
         .Times(1)
@@ -45,5 +56,6 @@ TEST(JsonResponse, BuildJsonResponse)
 
     board::buildJsonResponse(
         &response, 42, "test message", folly::dynamic::object("test", "json"));
+    EXPECT_EQ(body, R"({"test":"json"})");
 }
 
