@@ -34,7 +34,9 @@ void ThreadHandler::handleRequest(
     for (const auto& post : maybe_posts.value())
     {
         array.push_back(
-            folly::dynamic::object("id", post.post_id)("text", post.text));
+            folly::dynamic::object
+                ("id", post.post_id)
+                ("text", folly::StringPiece(post.text)));
     }
     buildOkResponse(folly::dynamic::object("posts", array));
 }
