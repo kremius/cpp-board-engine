@@ -6,6 +6,7 @@
 #include <proxygen/httpserver/ResponseBuilder.h>
 
 #include "DataHolder.h"
+#include "JsonResponse.h"
 #include "Utils.h"
 
 namespace board {
@@ -75,6 +76,18 @@ protected:
 
     utils::string_view getPrefix() const {
         return utils::string_view(prefix_.data(), prefix_.size());
+    }
+    void buildJsonResponse(uint16_t code, const std::string& message, const folly::dynamic& json) {
+        board::buildJsonResponse(downstream_, code, message, json);
+    }
+    void buildNotFoundResponse() {
+        board::buildNotFoundResponse(downstream_);
+    }
+    void buildInternalServerResponse() {
+        board::buildInternalErrorResponse(downstream_);
+    }
+    void buildOkResponse(const folly::dynamic& json) {
+        board::buildOkResponse(downstream_, json);
     }
 private:
     void scheduleDeletion() {
