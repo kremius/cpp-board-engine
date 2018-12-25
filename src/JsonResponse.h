@@ -22,7 +22,7 @@ inline void buildNotFoundResponse(proxygen::ResponseHandler* handler) {
 }
 
 inline void buildInternalErrorResponse(proxygen::ResponseHandler* handler) {
-    buildJsonResponse(handler, 500, "Internal Server error", folly::dynamic::object());
+    buildJsonResponse(handler, 500, "Internal Server Error", folly::dynamic::object());
 }
 
 inline void buildOkResponse(proxygen::ResponseHandler* handler, const folly::dynamic& json) {
