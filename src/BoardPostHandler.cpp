@@ -27,7 +27,7 @@ const utils::string_view TEXT("text");
 
 namespace board {
 
-void PostHandler::handleRequest(
+void CreatePostHandler::handleRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     const auto& url = headers->getURL();
     const auto maybe_thread_number = utils::extractThreadNumber(url, getPrefix());

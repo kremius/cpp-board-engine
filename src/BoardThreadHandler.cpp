@@ -14,7 +14,7 @@ using proxygen::HTTPHeaderCode;
 
 namespace board {
 
-void ThreadHandler::handleRequest(
+void GetThreadHandler::handleRequest(
     std::unique_ptr<proxygen::HTTPMessage> headers) noexcept {
     const auto& url = headers->getURL();
     const auto maybe_thread_number = utils::extractThreadNumber(url, getPrefix());

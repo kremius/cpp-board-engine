@@ -5,9 +5,9 @@
 
 namespace board {
 
-class ThreadHandler : public BaseHandler {
+class GetThreadHandler : public BaseHandler {
 public:
-    explicit ThreadHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
+    explicit GetThreadHandler(std::shared_ptr<board::DataHolder> holder, folly::fbstring prefix)
         : BaseHandler(prefix),
           data_holder_(holder) {
         // Nothing
@@ -17,6 +17,6 @@ private:
     std::shared_ptr<board::DataHolder> data_holder_;
 };
 
-using ThreadHandlerFactory = BaseHandlerFactory<ThreadHandler>;
+using ThreadHandlerFactory = BaseHandlerFactory<GetThreadHandler>;
 
 } // namespace board
