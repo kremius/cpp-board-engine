@@ -77,13 +77,16 @@ protected:
     utils::string_view getPrefix() const {
         return utils::string_view(prefix_.data(), prefix_.size());
     }
-    void buildJsonResponse(uint16_t code, const std::string& message, const folly::dynamic& json) {
+    void buildJsonResponse(
+        uint16_t code,
+        const std::string& message,
+        const folly::dynamic& json = folly::dynamic::object()) {
         board::buildJsonResponse(downstream_, code, message, json);
     }
     void buildNotFoundResponse() {
         board::buildNotFoundResponse(downstream_);
     }
-    void buildInternalServerResponse() {
+    void buildInternalErrorResponse() {
         board::buildInternalErrorResponse(downstream_);
     }
     void buildOkResponse(const folly::dynamic& json) {
