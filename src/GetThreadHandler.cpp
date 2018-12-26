@@ -1,4 +1,4 @@
-#include "BoardThreadHandler.h"
+#include "GetThreadHandler.h"
 
 #include <boost/algorithm/string.hpp>
 

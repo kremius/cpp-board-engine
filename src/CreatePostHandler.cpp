@@ -1,4 +1,4 @@
-#include "BoardPostHandler.h"
+#include "CreatePostHandler.h"
 
 #include <boost/algorithm/string.hpp>
 

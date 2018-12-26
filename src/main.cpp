@@ -2,8 +2,8 @@
 
 #include <glog/logging.h>
 
-#include "BoardPostHandler.h"
-#include "BoardThreadHandler.h"
+#include "CreatePostHandler.h"
+#include "GetThreadHandler.h"
 #include "Router.h"
 
 using namespace proxygen;
