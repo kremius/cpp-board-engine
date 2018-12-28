@@ -207,3 +207,60 @@ TEST(RouterFactory, Route)
 
     // TODO: custon method test
 }
+
+TEST(RouterFactory, Prefixes)
+{
+    using namespace proxygen;
+
+    MockRequestHandler handler1;
+    MockRequestHandler handler2;
+
+    auto test_url = [](auto& router, auto url, auto expected_handler) {
+        HTTPMessage message;
+        message.setMethod(HTTPMethod::GET);
+        message.setURL(url);
+
+        auto handler = router.onRequest(nullptr, &message);
+        EXPECT_EQ(handler, expected_handler);
+    };
+
+    {
+        auto factory1 = std::make_unique<MockRequestHandlerFactory>();
+        auto factory2 = std::make_unique<MockRequestHandlerFactory>();
+
+        EXPECT_CALL(*factory1, onRequest(_, _))
+            .WillRepeatedly(Return(&handler1));
+        EXPECT_CALL(*factory2, onRequest(_, _))
+            .WillRepeatedly(Return(&handler2));
+
+        RouterFactory router;
+        router.addRoutes(RoutesChain()
+            .addThen("/prefix/", {HTTPMethod::GET}, std::move(factory2))
+            .addThen("/prefix", {HTTPMethod::GET}, std::move(factory1))
+            .build());
+
+        test_url(router, "/prefix", &handler1);
+        test_url(router, "/prefix/", &handler2);
+        test_url(router, "/prefix/stuffstuffstuff", &handler2);
+    }
+    // In reverse order
+    {
+        auto factory1 = std::make_unique<MockRequestHandlerFactory>();
+        auto factory2 = std::make_unique<MockRequestHandlerFactory>();
+
+        EXPECT_CALL(*factory1, onRequest(_, _))
+            .WillRepeatedly(Return(&handler1));
+        EXPECT_CALL(*factory2, onRequest(_, _))
+            .WillRepeatedly(Return(&handler2));
+
+        RouterFactory router;
+        router.addRoutes(RoutesChain()
+            .addThen("/prefix", {HTTPMethod::GET}, std::move(factory1))
+            .addThen("/prefix/", {HTTPMethod::GET}, std::move(factory2))
+            .build());
+
+        test_url(router, "/prefix", &handler1);
+        test_url(router, "/prefix/", &handler1);
+        test_url(router, "/prefix/stuffstuffstuff", &handler1);
+    }
+}
