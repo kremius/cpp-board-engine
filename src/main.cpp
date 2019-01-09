@@ -3,6 +3,7 @@
 #include <glog/logging.h>
 
 #include "CreatePostHandler.h"
+#include "CreateThreadHandler.h"
 #include "GetThreadHandler.h"
 #include "Router.h"
 
@@ -26,6 +27,7 @@ int main(int /*argc*/, char* argv[]) {
     router->addRoutes(RoutesChain()
         .addThen<board::ThreadHandlerFactory>("/b/", {HTTPMethod::GET}, data_holder, "/b/")
         .addThen<board::CreatePostHandlerFactory>("/b/", {HTTPMethod::POST}, data_holder, "/b/")
+        .addThen<board::CreateThreadHandlerFactory>("/b", {HTTPMethod::POST}, data_holder, "/b")
         .build());
 
     options.handlerFactories = RequestHandlerChain()

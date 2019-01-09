@@ -13,13 +13,12 @@
 using proxygen::ResponseBuilder;
 using proxygen::HTTPHeaderCode;
 
-namespace
-{
+namespace {
 
-namespace key
-{
+namespace key {
 
 const utils::string_view TEXT("text");
+const utils::string_view ID("id");
 
 } // namespace key
 
@@ -45,7 +44,8 @@ void CreatePostHandler::handleRequest(
 
     // TODO: extra copy here, can be removed?
     const char* data = reinterpret_cast<const char*>(maybe_body.value()->data());
-    folly::dynamic json_body = folly::parseJson(utils::string_view(data, maybe_body.value()->length()));
+    folly::dynamic json_body = folly::parseJson(
+        utils::string_view(data, maybe_body.value()->length()));
     auto text_it = json_body.find(key::TEXT);
     if (   (text_it == json_body.items().end())
         || !text_it->second.isString()) {
@@ -53,14 +53,16 @@ void CreatePostHandler::handleRequest(
         return;
     }
 
-    auto result = data_holder_->addPostToThread({0, number, text_it->second.asString(), {}}).getTry();
+    auto result = data_holder_->addPostToThread(
+        {0, number, text_it->second.asString(), {}}).getTry();
 
     if (result.hasException()) {
         buildNotFoundResponse();
         return;
     }
 
-    buildOkResponse(folly::dynamic::object("id", result.value()));
+    buildOkResponse(folly::dynamic::object(
+        folly::StringPiece(key::ID), result.value()));
 }
 
 } // namespace board
