@@ -20,14 +20,17 @@ MATCHER(IsJsonContentType, "") {
 
 } // namespace
 
+class GetThreadHandlerTest : public ::testing::Test {
+protected:
+    GetThreadHandlerTest() {
+        holder_ = std::make_shared<board::DataHolder>();
+        holder_->createThread({0, 0, "text1", "image1"}).getTry();
+    };
+    std::shared_ptr<board::DataHolder> holder_;
+};
 
-TEST(GetThreadHandler, Basics) {
-    // TODO: mock DataHolder
-    auto holder = std::make_shared<board::DataHolder>();
-
-    /*auto maybe_thread = */holder->createThread({0, 0, "text1", "image1"}).getTry();
-
-    board::GetThreadHandler handler(holder, "/test/");
+TEST_F(GetThreadHandlerTest, Basics) {
+    board::GetThreadHandler handler(holder_, "/test/");
     proxygen::MockResponseHandler response_mock(&handler);
     handler.setResponseHandler(&response_mock);
 
