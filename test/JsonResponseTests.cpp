@@ -14,16 +14,14 @@ using proxygen::HTTPHeaderCode;
 
 namespace {
 
-MATCHER(IsJsonContentType, "")
-{
+MATCHER(IsJsonContentType, "") {
     const auto& headers = arg.getHeaders();
     return headers.getSingleOrEmpty(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE) == "application/json";
 }
 
 } // namespace
 
-TEST(JsonResponse, BuildJsonResponse)
-{
+TEST(JsonResponse, BuildJsonResponse) {
     MockRequestHandler request;
     MockResponseHandler response(&request);
 
@@ -58,8 +56,7 @@ TEST(JsonResponse, BuildJsonResponse)
     EXPECT_EQ(body, R"({"test":"json"})");
 }
 
-TEST(JsonResponse, BuildNotFoundResponse)
-{
+TEST(JsonResponse, BuildNotFoundResponse) {
     MockRequestHandler request;
     MockResponseHandler response(&request);
 
@@ -93,8 +90,7 @@ TEST(JsonResponse, BuildNotFoundResponse)
     EXPECT_EQ(body, "{}");
 }
 
-TEST(JsonResponse, buildInternalErrorResponse)
-{
+TEST(JsonResponse, buildInternalErrorResponse) {
     MockRequestHandler request;
     MockResponseHandler response(&request);
 
@@ -128,8 +124,7 @@ TEST(JsonResponse, buildInternalErrorResponse)
     EXPECT_EQ(body, "{}");
 }
 
-TEST(JsonResponse, buildOkResponse)
-{
+TEST(JsonResponse, buildOkResponse) {
     MockRequestHandler request;
     MockResponseHandler response(&request);
 

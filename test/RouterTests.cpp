@@ -4,8 +4,7 @@
 
 #include <proxygen/httpserver/Mocks.h>
 
-class MockRequestHandlerFactory : public proxygen::RequestHandlerFactory
-{
+class MockRequestHandlerFactory : public proxygen::RequestHandlerFactory {
 public:
     GMOCK_METHOD1_(, noexcept, , onServerStart, void(folly::EventBase*));
     GMOCK_METHOD0_(, noexcept, , onServerStop, void());
@@ -13,8 +12,7 @@ public:
                    proxygen::RequestHandler*(proxygen::RequestHandler*, proxygen::HTTPMessage*));
 };
 
-namespace
-{
+namespace {
 
 template<int i>
 class DummyHandler : public proxygen::RequestHandler {
@@ -51,8 +49,7 @@ public:
 
 }
 
-TEST(RoutesChain, BasicUsage)
-{
+TEST(RoutesChain, BasicUsage) {
     using namespace proxygen;
 
     auto factory1 = std::make_unique<MockRequestHandlerFactory>();
@@ -82,8 +79,7 @@ TEST(RoutesChain, BasicUsage)
 using ::testing::_;
 using ::testing::Return;
 
-TEST(RouterFactory, StopAndStart)
-{
+TEST(RouterFactory, StopAndStart) {
     using namespace proxygen;
 
     auto factory1 = std::make_unique<MockRequestHandlerFactory>();
@@ -118,8 +114,7 @@ TEST(RouterFactory, StopAndStart)
     router.onServerStop();
 }
 
-TEST(RouterFactory, Route)
-{
+TEST(RouterFactory, Route) {
     using namespace proxygen;
 
     auto factory1 = std::make_unique<MockRequestHandlerFactory>();
@@ -208,8 +203,7 @@ TEST(RouterFactory, Route)
     // TODO: custon method test
 }
 
-TEST(RouterFactory, Prefixes)
-{
+TEST(RouterFactory, Prefixes) {
     using namespace proxygen;
 
     MockRequestHandler handler1;

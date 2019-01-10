@@ -4,8 +4,7 @@
 
 #include <boost/range/irange.hpp>
 
-TEST(DataHolder, Empty)
-{
+TEST(DataHolder, Empty) {
     board::DataHolder holder;
 
     {
@@ -19,8 +18,7 @@ TEST(DataHolder, Empty)
     }
 }
 
-TEST(DataHolder, ThreadAndPosts)
-{
+TEST(DataHolder, ThreadAndPosts) {
     board::DataHolder holder;
 
     {

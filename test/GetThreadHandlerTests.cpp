@@ -13,8 +13,7 @@ using proxygen::HTTPHeaderCode;
 
 namespace {
 
-MATCHER(IsJsonContentType, "")
-{
+MATCHER(IsJsonContentType, "") {
     const auto& headers = arg.getHeaders();
     return headers.getSingleOrEmpty(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE) == "application/json";
 }
@@ -22,8 +21,7 @@ MATCHER(IsJsonContentType, "")
 } // namespace
 
 
-TEST(GetThreadHandler, Basics)
-{
+TEST(GetThreadHandler, Basics) {
     // TODO: mock DataHolder
     auto holder = std::make_shared<board::DataHolder>();
 

@@ -2,8 +2,7 @@
 
 #include <proxygen/httpserver/Mocks.h>
 
-TEST(DefaultPageNotFoundHandler, Basics)
-{
+TEST(DefaultPageNotFoundHandler, Basics) {
     DefaultPageNotFoundHandler handler;
     proxygen::MockResponseHandler response_mock(&handler);
     handler.setResponseHandler(&response_mock);
