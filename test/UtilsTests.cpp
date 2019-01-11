@@ -12,6 +12,8 @@ TEST(Utils, ExtractThreadNumber)
     EXPECT_EQ(utils::extractThreadNumber("prefix-1", "prefix-"), result_type{1});
     EXPECT_EQ(utils::extractThreadNumber("prefixnotanumber", "prefix"), result_type{});
     EXPECT_EQ(utils::extractThreadNumber("prefix10", "veryveryverylongprefix"), result_type{});
+    EXPECT_EQ(utils::extractThreadNumber("prefix", "prefix"), result_type{});
+    EXPECT_EQ(utils::extractThreadNumber("prefix", "prefixlong"), result_type{});
     EXPECT_EQ(utils::extractThreadNumber("prefix0", "prefix"), result_type{0});
     EXPECT_EQ(
         utils::extractThreadNumber("prefix18446744073709551615", "prefix"),
