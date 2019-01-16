@@ -2,6 +2,8 @@
 
 #include <proxygen/httpserver/Mocks.h>
 
+#include "HandlersTestUtils.h"
+
 using ::testing::_;
 using ::testing::Property;
 using ::testing::Invoke;
@@ -11,28 +13,7 @@ using proxygen::MockResponseHandler;
 using proxygen::HTTPMessage;
 using proxygen::HTTPHeaderCode;
 
-namespace {
-
-MATCHER(IsJsonContentType, "") {
-    const auto& headers = arg.getHeaders();
-    return headers.getSingleOrEmpty(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE) == "application/json";
-}
-
-} // namespace
-
-class GetThreadHandlerTest : public ::testing::Test {
-protected:
-    GetThreadHandlerTest()
-        : holder_(std::make_shared<board::DataHolder>()),
-          handler_(holder_, "/test/"),
-          response_mock_(&handler_) {
-        handler_.setResponseHandler(&response_mock_);
-        holder_->createThread({0, 0, "text1", "image1"}).getTry();
-    };
-    std::shared_ptr<board::DataHolder> holder_;
-    board::GetThreadHandler handler_;
-    proxygen::MockResponseHandler response_mock_;
-};
+using GetThreadHandlerTest = BaseHandlerTest<board::GetThreadHandler>;
 
 TEST_F(GetThreadHandlerTest, Basics) {
     Sequence sequence;

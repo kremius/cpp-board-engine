@@ -41,7 +41,8 @@ target_compile_options(cpp-board-engine PRIVATE ${STRICT_OPTIONS})
 target_link_libraries(cpp-board-engine ${LINK_LIBRARIES_LIST})
 
 file(GLOB_RECURSE TESTS CONFIGURE_DEPENDS "test/*.cpp")
-add_executable(cpp-board-engine-tests ${TESTS} $<TARGET_OBJECTS:cpp-board-engine-objects>)
+file(GLOB_RECURSE TESTS_HEADERS CONFIGURE_DEPENDS "test/*.h")
+add_executable(cpp-board-engine-tests ${TESTS} ${TESTS_HEADERS} $<TARGET_OBJECTS:cpp-board-engine-objects>)
 
 target_include_directories(cpp-board-engine-tests PRIVATE "src/")
 target_include_directories(

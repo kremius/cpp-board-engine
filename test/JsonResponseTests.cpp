@@ -2,6 +2,8 @@
 
 #include <proxygen/httpserver/Mocks.h>
 
+#include "HandlersTestUtils.h"
+
 using ::testing::_;
 using ::testing::Property;
 using ::testing::Invoke;
@@ -11,15 +13,6 @@ using proxygen::MockRequestHandler;
 using proxygen::MockResponseHandler;
 using proxygen::HTTPMessage;
 using proxygen::HTTPHeaderCode;
-
-namespace {
-
-MATCHER(IsJsonContentType, "") {
-    const auto& headers = arg.getHeaders();
-    return headers.getSingleOrEmpty(HTTPHeaderCode::HTTP_HEADER_CONTENT_TYPE) == "application/json";
-}
-
-} // namespace
 
 TEST(JsonResponse, BuildJsonResponse) {
     MockRequestHandler request;
