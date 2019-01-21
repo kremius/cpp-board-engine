@@ -38,6 +38,9 @@ public:
         if (isDeletionScheduled()) {
             return {};
         }
+        if (!body_) {
+            return {};
+        }
         body_->coalesce();
         return std::move(body_);
     }

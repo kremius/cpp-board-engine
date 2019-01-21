@@ -1,5 +1,7 @@
 #pragma once
 
+#include <folly/io/async/EventBaseManager.h>
+
 #include <proxygen/httpserver/Mocks.h>
 
 #include "DataHolder.h"

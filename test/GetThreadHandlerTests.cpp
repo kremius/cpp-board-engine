@@ -40,6 +40,7 @@ TEST_F(GetThreadHandlerTest, Basics) {
     auto headers = std::make_unique<proxygen::HTTPMessage>();
     headers->setURL("/test/1");
     handler_.onRequest(std::move(headers));
+    handler_.onEOM();
     folly::EventBaseManager::get()->getEventBase()->loop();
     EXPECT_EQ(body, R"({"posts":[{"text":"text1","id":1}]})");
 }
@@ -69,6 +70,7 @@ TEST_F(GetThreadHandlerTest, InvalidThreadId) {
     auto headers = std::make_unique<proxygen::HTTPMessage>();
     headers->setURL("/test/notanumber");
     handler_.onRequest(std::move(headers));
+    handler_.onEOM();
     folly::EventBaseManager::get()->getEventBase()->loop();
     EXPECT_EQ(body, "{}");
 }
@@ -98,6 +100,7 @@ TEST_F(GetThreadHandlerTest, ThreadDoesNotExist) {
     auto headers = std::make_unique<proxygen::HTTPMessage>();
     headers->setURL("/test/2");
     handler_.onRequest(std::move(headers));
+    handler_.onEOM();
     folly::EventBaseManager::get()->getEventBase()->loop();
     EXPECT_EQ(body, "{}");
 }
