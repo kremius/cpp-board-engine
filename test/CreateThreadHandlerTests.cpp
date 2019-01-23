@@ -29,7 +29,7 @@ TEST_F(CreateThreadHandlerTest, Basics) {
     EXPECT_CALL(response_mock_, sendBody(_))
         .InSequence(sequence)
         .WillOnce(DoAll(
-            Invoke([&] (std::shared_ptr<folly::IOBuf> buffer) {
+            Invoke([&](std::shared_ptr<folly::IOBuf> buffer) {
                 body = buffer->moveToFbString();
             }),
             Return()));
@@ -44,4 +44,34 @@ TEST_F(CreateThreadHandlerTest, Basics) {
     handler_.onEOM();
     folly::EventBaseManager::get()->getEventBase()->loop();
     EXPECT_EQ(body, R"({"id":2})");
+}
+
+TEST_F(CreateThreadHandlerTest, NoRequestBody) {
+    Sequence sequence;
+
+    const auto headers_matcher = AllOf(
+        Property(&HTTPMessage::getStatusCode, 500),
+        IsJsonContentType());
+    EXPECT_CALL(response_mock_,
+                sendHeaders(headers_matcher))
+        .Times(1)
+        .InSequence(sequence);
+    folly::fbstring body;
+    EXPECT_CALL(response_mock_, sendBody(_))
+        .InSequence(sequence)
+        .WillOnce(DoAll(
+            Invoke([&](std::shared_ptr<folly::IOBuf> buffer) {
+                body = buffer->moveToFbString();
+            }),
+            Return()));
+    EXPECT_CALL(response_mock_, sendEOM())
+        .Times(1)
+        .InSequence(sequence);
+
+    auto headers = std::make_unique<proxygen::HTTPMessage>();
+    headers->setURL("/test/");
+    handler_.onRequest(std::move(headers));
+    handler_.onEOM();
+    folly::EventBaseManager::get()->getEventBase()->loop();
+    EXPECT_EQ(body, R"({})");
 }

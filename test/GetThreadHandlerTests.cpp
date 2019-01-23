@@ -59,7 +59,7 @@ TEST_F(GetThreadHandlerTest, InvalidThreadId) {
     EXPECT_CALL(response_mock_, sendBody(_))
         .InSequence(sequence)
         .WillOnce(DoAll(
-            Invoke([&] (std::shared_ptr<folly::IOBuf> buffer) {
+            Invoke([&](std::shared_ptr<folly::IOBuf> buffer) {
                 body = buffer->moveToFbString();
             }),
             Return()));
@@ -89,7 +89,7 @@ TEST_F(GetThreadHandlerTest, ThreadDoesNotExist) {
     EXPECT_CALL(response_mock_, sendBody(_))
         .InSequence(sequence)
         .WillOnce(DoAll(
-            Invoke([&] (std::shared_ptr<folly::IOBuf> buffer) {
+            Invoke([&](std::shared_ptr<folly::IOBuf> buffer) {
                 body = buffer->moveToFbString();
             }),
             Return()));
