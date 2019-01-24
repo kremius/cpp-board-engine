@@ -23,8 +23,13 @@ void board::CreateThreadHandler::handleRequest(
     }
 
     const char* data = reinterpret_cast<const char*>(maybe_body.value()->data());
-    folly::dynamic json_body = folly::parseJson(
+    auto maybe_json_body = utils::parseJson(
         utils::string_view(data, maybe_body.value()->length()));
+    if (!maybe_json_body) {
+        buildJsonResponse(400, "Bad Request");
+        return;
+    }
+    folly::dynamic json_body = maybe_json_body.value();
     auto text_it = json_body.find(key::TEXT);
     if (   (text_it == json_body.items().end())
         || !text_it->second.isString()) {
