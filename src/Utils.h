@@ -6,6 +6,8 @@
 #include <boost/algorithm/string.hpp>
 
 #include <folly/Conv.h>
+#include <folly/dynamic.h>
+#include <folly/json.h>
 
 namespace utils {
 
@@ -32,6 +34,15 @@ inline utils::optional<uint64_t> extractThreadNumber(string_view url, string_vie
     }
     const uint64_t number = maybe_number.value();
     return number;
+}
+
+// Optional-style wrapper
+inline utils::optional<folly::dynamic> parseJson(folly::StringPiece data) {
+    try {
+        return folly::parseJson(data);
+    } catch (const std::exception&) {
+        return {};
+    }
 }
 
 } // namespace utils

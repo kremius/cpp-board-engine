@@ -2,8 +2,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(Utils, ExtractThreadNumber)
-{
+TEST(Utils, ExtractThreadNumber) {
     using result_type = utils::optional<uint64_t>;
 
     EXPECT_EQ(utils::extractThreadNumber("prefix100", "wrong_prefix"), result_type{});
@@ -21,4 +20,11 @@ TEST(Utils, ExtractThreadNumber)
     EXPECT_EQ(
         utils::extractThreadNumber("prefix18446744073709551616", "prefix"),
         result_type{});
+}
+
+TEST(Utils, ParseJson) {
+    using result_type = utils::optional<folly::dynamic>;
+
+    EXPECT_EQ(utils::parseJson(R"({"test":42})"), result_type{folly::dynamic::object("test", 42)});
+    EXPECT_EQ(utils::parseJson(R"({"test":"v})"), result_type{});
 }
