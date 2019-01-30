@@ -1,17 +1,6 @@
 #include "CreateThreadHandler.h"
 
-#include <proxygen/httpserver/Mocks.h>
-
 #include "HandlersTestUtils.h"
-
-using ::testing::_;
-using ::testing::Property;
-using ::testing::Invoke;
-using ::testing::Return;
-using ::testing::Sequence;
-using proxygen::MockResponseHandler;
-using proxygen::HTTPMessage;
-using proxygen::HTTPHeaderCode;
 
 using CreateThreadHandlerTest = BaseHandlerTest<board::CreateThreadHandler>;
 
