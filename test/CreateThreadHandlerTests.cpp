@@ -45,7 +45,7 @@ TEST_F(CreateThreadHandlerTest, WrongJsonKey) {
     auto headers = std::make_unique<proxygen::HTTPMessage>();
     headers->setURL("/test/");
     handler_.onRequest(std::move(headers));
-    handler_.onBody(folly::IOBuf::copyBuffer(R"({"no-text":"valid, but wrong key")"));
+    handler_.onBody(folly::IOBuf::copyBuffer(R"({"no-text":"valid, but wrong key"})"));
     handler_.onEOM();
     folly::EventBaseManager::get()->getEventBase()->loop();
     EXPECT_EQ(body_, R"({})");
